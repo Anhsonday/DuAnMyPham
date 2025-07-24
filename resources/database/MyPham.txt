@@ -1,0 +1,942 @@
+-- CREATE DATABASE DUANMYPHAM
+
+-- ALTER DATABASE DUANMYPHAM SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+
+-- 1. QUẢN LÝ NGƯỜI DÙNG
+CREATE TABLE Users (
+    UserID INT PRIMARY KEY IDENTITY(1,1),
+    UserName NVARCHAR(50) NOT NULL UNIQUE,
+    PassWord NVARCHAR(255) NOT NULL,
+    Email NVARCHAR(100) NOT NULL UNIQUE,
+    Phone NVARCHAR(20),
+    FullName NVARCHAR(100),
+    Role NVARCHAR(50) NOT NULL DEFAULT 'customer' CHECK (Role IN ('admin', 'customer')),
+    Status NVARCHAR(20) NOT NULL DEFAULT 'active' CHECK (Status IN ('active', 'inactive', 'pending')),
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    LastLogin DATETIME NULL, -- cho phép NULL khi chưa từng đăng nhập
+    Avatar NVARCHAR(255),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    Reset_Token NVARCHAR(10) NULL,
+    Reset_Token_Expiry DATETIME NULL,
+    Google_Id NVARCHAR(100) NULL
+);
+
+CREATE TABLE Addresses (
+    AddressID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT NOT NULL,
+    RecipientName NVARCHAR(100) NOT NULL,
+    Phone NVARCHAR(20) NOT NULL,
+    Province NVARCHAR(50) NOT NULL,
+    District NVARCHAR(50) NOT NULL,
+    Ward NVARCHAR(50) NOT NULL,
+    AddressDetail NVARCHAR(255) NOT NULL,
+    IsDefault BIT NOT NULL DEFAULT 0,
+    AddressType NVARCHAR(20) NOT NULL DEFAULT 'shipping' CHECK (AddressType IN ('shipping', 'billing')),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
+);
+
+-- 2. QUẢN LÝ SẢN PHẨM CHĂM SÓC DA
+CREATE TABLE Categories (
+    CategoryID INT PRIMARY KEY IDENTITY(1,1),
+    ParentCategoryID INT NULL,
+    CategoryName NVARCHAR(100) NOT NULL,
+    Description NVARCHAR(MAX),
+    Image NVARCHAR(255),
+    Status NVARCHAR(20) NOT NULL CHECK (Status IN ('active', 'inactive')) DEFAULT 'active',
+    DisplayOrder INT NOT NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (ParentCategoryID) REFERENCES Categories(CategoryID) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE TABLE Products (
+    ProductID INT PRIMARY KEY IDENTITY(1,1),
+    CategoryID INT,  -- Cho phép NULL vì ON DELETE SET NULL
+    ProductName NVARCHAR(255) NOT NULL,
+    BrandName NVARCHAR(100) NOT NULL,
+    ShortDescription NVARCHAR(255),
+    Price DECIMAL(12,2) NOT NULL,
+    SalePrice DECIMAL(12,2),
+    Stock INT NOT NULL DEFAULT 0,
+    ReservedQuantity INT NOT NULL DEFAULT 0,
+    SKU NVARCHAR(50) UNIQUE NOT NULL,
+    QuantityValue DECIMAL(8,2) NOT NULL,
+    QuantityUnit NVARCHAR(20) NOT NULL,
+    Status NVARCHAR(20) NOT NULL CHECK (Status IN ('active', 'inactive', 'out_of_stock')) DEFAULT 'active',
+    Featured BIT NOT NULL DEFAULT 0,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (CategoryID) REFERENCES Categories(CategoryID) ON DELETE SET NULL
+);
+
+CREATE TABLE ProductDetails (
+    ProductDetailID INT PRIMARY KEY IDENTITY(1,1),
+    ProductID INT NOT NULL,
+    Description NVARCHAR(MAX) NOT NULL,
+    Ingredients NVARCHAR(MAX) NOT NULL,
+    Origin NVARCHAR(50) NOT NULL,
+    SkinConcerns NVARCHAR(255),
+    StorageInstructions NVARCHAR(255) NOT NULL,
+    HowToUse NVARCHAR(MAX) NOT NULL,
+    ManufactureDate DATE NOT NULL,
+    ExpiryDate DATE NOT NULL,
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
+);
+
+CREATE TABLE ProductImages (
+    ImageID INT PRIMARY KEY IDENTITY(1,1),
+    ProductID INT NOT NULL,
+    ImageURL NVARCHAR(255) NOT NULL,
+    IsMainImage BIT NOT NULL DEFAULT 0,
+    DisplayOrder INT NOT NULL DEFAULT 0,
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
+);
+
+-- 3. QUẢN LÝ GIỎ HÀNG
+CREATE TABLE Carts (
+    CartID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    Status NVARCHAR(20) NOT NULL DEFAULT 'active'
+        CHECK (Status IN ('active', 'checkout')),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
+);
+
+CREATE TABLE CartItems (
+    CartItemID INT PRIMARY KEY IDENTITY(1,1),
+    CartID INT NOT NULL,
+    ProductID INT NOT NULL,
+    Quantity INT NOT NULL CHECK (Quantity > 0),
+    AddedAt DATETIME NOT NULL DEFAULT GETDATE(),
+	Status NVARCHAR(20) NOT NULL DEFAULT 'pending'
+        CHECK (Status IN ('pending', 'selected', 'checkout')),
+	IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (CartID) REFERENCES Carts(CartID) ON DELETE CASCADE,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+INSERT INTO CartItems (CartID, ProductID, Quantity, Status, IsDeleted)
+VALUES 
+(1, 1, 1, 'pending', 0),
+(1, 2, 1, 'pending', 0),
+(1, 3, 1, 'pending', 0);
+
+-- 4. QUẢN LÝ ĐƠN HÀNG VÀ THANH TOÁN
+CREATE TABLE PaymentMethods (
+    PaymentMethodID INT PRIMARY KEY IDENTITY(1,1),
+    MethodName NVARCHAR(100) NOT NULL UNIQUE,
+    Description NVARCHAR(500),
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    IsDeleted BIT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT NULL,
+    OrderNumber NVARCHAR(50) NOT NULL UNIQUE,
+    Status NVARCHAR(20) NOT NULL DEFAULT 'pending'
+        CHECK (Status IN ('pending', 'confirmed', 'processing', 'shipping', 'delivered', 'cancelled', 'refunded')),
+    TotalAmount DECIMAL(12,2) NOT NULL,
+    DiscountAmount DECIMAL(12,2) NOT NULL DEFAULT 0,
+    ShippingFee DECIMAL(12,2) NOT NULL DEFAULT 0,
+    Tax DECIMAL(12,2) NOT NULL DEFAULT 0,
+    FinalAmount DECIMAL(12,2) NOT NULL,
+    PaymentMethodID INT NULL,
+    ShippingAddressID INT NOT NULL,
+    BillingAddressID INT NOT NULL,
+    Notes NVARCHAR(MAX),
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE SET NULL,
+    FOREIGN KEY (PaymentMethodID) REFERENCES PaymentMethods(PaymentMethodID) ON DELETE SET NULL,
+    FOREIGN KEY (ShippingAddressID) REFERENCES Addresses(AddressID) ON DELETE NO ACTION ON UPDATE NO ACTION,
+    FOREIGN KEY (BillingAddressID) REFERENCES Addresses(AddressID) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE TABLE OrderItems (
+    OrderItemID INT PRIMARY KEY IDENTITY(1,1),
+    OrderID INT NOT NULL,
+    ProductID INT NOT NULL,
+    ProductName NVARCHAR(255) NOT NULL,
+    Quantity INT NOT NULL CHECK (Quantity > 0),
+    UnitPrice DECIMAL(12,2) NOT NULL CHECK (UnitPrice >= 0),
+    Subtotal DECIMAL(12,2) NOT NULL CHECK (Subtotal >= 0),
+	IsDeleted BIT NOT NULL DEFAULT 0,
+
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE TABLE Payments (
+    PaymentID INT PRIMARY KEY IDENTITY(1,1),
+    OrderID INT NOT NULL,
+    PaymentMethodID INT,
+    TransactionID NVARCHAR(100) NOT NULL,
+    Amount DECIMAL(12,2) NOT NULL CHECK (Amount >= 0),
+    Status NVARCHAR(20) NOT NULL CHECK (Status IN ('pending', 'paid', 'unpaid', 'failed', 'refunded')) DEFAULT 'pending',
+    PaymentDate DATETIME NOT NULL DEFAULT GETDATE(),
+    PaymentDetails NVARCHAR(MAX),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE,
+    FOREIGN KEY (PaymentMethodID) REFERENCES PaymentMethods(PaymentMethodID) ON DELETE SET NULL
+);
+
+-- 5. KHUYẾN MÃI VÀ MÃ GIẢM GIÁ
+CREATE TABLE Coupons (
+    CouponID INT PRIMARY KEY IDENTITY(1,1),
+    Code NVARCHAR(50) NOT NULL UNIQUE,
+    Description NVARCHAR(MAX),
+    DiscountType NVARCHAR(20) NOT NULL CHECK (DiscountType IN ('percentage', 'fixed_amount')),
+    DiscountValue DECIMAL(12,2) NOT NULL CHECK (DiscountValue >= 0),
+    MinimumOrder DECIMAL(12,2) NOT NULL CHECK (MinimumOrder >= 0),
+    MaximumDiscount DECIMAL(12,2) CHECK (MaximumDiscount >= 0),
+    UsageLimit INT NOT NULL CHECK (UsageLimit >= 0),
+    UsageCount INT NOT NULL DEFAULT 0 CHECK (UsageCount >= 0),
+    StartDate DATETIME NOT NULL,
+    EndDate DATETIME NOT NULL,
+    Status NVARCHAR(20) NOT NULL DEFAULT 'active' CHECK (Status IN ('active', 'inactive', 'expired')),
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    IsDeleted BIT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE CouponProducts (
+    CouponProductID INT PRIMARY KEY IDENTITY(1,1),
+    CouponID INT NOT NULL,
+    ProductID INT NOT NULL,
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (CouponID) REFERENCES Coupons(CouponID) ON DELETE CASCADE,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
+);
+
+CREATE TABLE CouponUsage (
+    UsageID INT PRIMARY KEY IDENTITY(1,1),
+    CouponID INT NOT NULL,
+    UserID INT NOT NULL,
+    OrderID INT NOT NULL,
+    DiscountAmount DECIMAL(12,2) NOT NULL CHECK (DiscountAmount >= 0),
+    UsedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (CouponID) REFERENCES Coupons(CouponID) ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE
+);
+
+CREATE TABLE InventoryLogs (
+    LogID INT PRIMARY KEY IDENTITY(1,1),
+    ProductID INT NOT NULL,
+    QuantityBefore INT NOT NULL CHECK (QuantityBefore >= 0),
+    QuantityAfter INT NOT NULL CHECK (QuantityAfter >= 0),
+    ChangeType NVARCHAR(20) NOT NULL CHECK (ChangeType IN ('increase', 'decrease')),
+    Reason NVARCHAR(255),
+    ReferenceID INT,
+    ReferenceType NVARCHAR(50),
+    ExpiryDate DATE,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
+);
+
+-- 6. TƯƠNG TÁC KHÁCH HÀNG
+CREATE TABLE Reviews (
+    ReviewID INT PRIMARY KEY IDENTITY(1,1),
+    ProductID INT NOT NULL,
+    UserID INT NOT NULL,
+    OrderID INT,
+    Rating INT NOT NULL CHECK (Rating BETWEEN 1 AND 5),
+    Comment NVARCHAR(MAX),
+    SkinCondition NVARCHAR(255),
+    ReviewDate DATETIME NOT NULL DEFAULT GETDATE(),
+    Status NVARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (Status IN ('pending', 'approved', 'rejected')),
+    IsVerifiedPurchase BIT NOT NULL DEFAULT 0,
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE SET NULL
+);
+
+CREATE TABLE Wishlist (
+    WishlistID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT NOT NULL,
+    ProductID INT NOT NULL,
+    AddedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
+);
+
+
+-- 7. KH?I T?O D? LI?U BAN Ð?U
+
+-- USERS
+INSERT INTO Users (
+    UserName, PassWord, Email, Phone, FullName, Role, Status, CreatedAt, LastLogin, Avatar, IsDeleted, Reset_Token, Reset_Token_Expiry, Google_Id
+)
+VALUES 
+(N'admin1', N'hashed_password_1', N'admin@skincare.vn', N'0901234567', N'Nguyễn Văn Admin', N'admin', N'active', '2025-05-01 10:00:00', '2025-05-20 18:00:00', N'/avatars/admin.jpg', 0, NULL, NULL, NULL),
+(N'customer1', N'hashed_password_2', N'customer1@skincare.vn', N'0908765432', N'Nguyễn Thị Lan', N'customer', N'active', '2025-05-02 12:00:00', '2025-05-20 14:00:00', N'/avatars/customer1.jpg', 0, NULL, NULL, NULL),
+(N'customer2', N'hashed_password_3', N'customer2@skincare.vn', N'0912345678', N'Trần Thị Minh', N'customer', N'inactive', '2025-05-03 15:00:00', NULL, NULL, 0, NULL, NULL, NULL);
+
+INSERT INTO Addresses (UserID, RecipientName, Phone, Province, District, Ward, AddressDetail, IsDefault, AddressType)
+VALUES 
+(2, N'Nguyễn Thị Lan', N'0908765432', N'TP Hồ Chí Minh', N'Quận 1', N'Phường Bến Nghé', N'123 Đường Lê Lợi', 1, 'shipping'),
+(2, N'Nguyễn Thị Lan', N'0908765432', N'TP Hồ Chí Minh', N'Quận 1', N'Phường Bến Nghé', N'123 Đường Lê Lợi', 0, 'billing');
+
+-- CATEGORIES
+-- CẤU TRÚC DANH MỤC MỸ PHẨM - CẤU TRÚC ĐÚNG
+INSERT INTO Categories (ParentCategoryID, CategoryName, Description, Image, Status, DisplayOrder, CreatedAt)
+VALUES 
+(NULL, N'Mỹ phẩm', N'Các sản phẩm mỹ phẩm và làm đẹp', N'/images/category/cat_cosmetics.jpg', 'active', 1, GETDATE()),
+-- Danh mục con cấp 1
+(1, N'Chăm sóc da', N'Các sản phẩm chăm sóc da mặt và cơ thể', N'/images/category/cat_skincare.jpg', 'active', 1, GETDATE()),
+(1, N'Chăm sóc tóc', N'Các sản phẩm chăm sóc tóc', N'/images/category/cat_haircare.jpg', 'active', 2, GETDATE()),
+(1, N'Chăm sóc cơ thể', N'Các sản phẩm chăm sóc cơ thể', N'/images/category/cat_bodycare.jpg', 'active', 3, GETDATE()),
+(1, N'Nước hoa', N'Các loại nước hoa nam và nữ', N'/images/category/cat_perfume.jpg', 'active', 4, GETDATE()),
+-- Danh mục con cấp 2: Chi tiết cho Chăm sóc da
+(2, N'Sữa rửa mặt', N'Sản phẩm làm sạch da', N'/images/category/cat_cleanser.jpg', 'active', 1, GETDATE()),
+(2, N'Kem dưỡng', N'Kem dưỡng ẩm, chống lão hóa', N'/images/category/cat_moisturizer.jpg', 'active', 2, GETDATE()),
+(2, N'Mặt nạ', N'Mặt nạ dưỡng da', N'/images/category/cat_mask.jpg', 'active', 3, GETDATE()),
+(2, N'Tẩy trang', N'Sản phẩm tẩy trang', N'/images/category/cat_remover.jpg', 'active', 4, GETDATE()),
+(2, N'Kem chống nắng', N'Bảo vệ da khỏi tia UV', N'/images/category/cat_sunscreen.jpg', 'active', 5, GETDATE()),
+-- Danh mục con cấp 2: Chi tiết cho Chăm sóc tóc
+(3, N'Dầu gội', N'Dầu gội làm sạch tóc', N'/images/category/cat_shampoo.jpg', 'active', 1, GETDATE()),
+(3, N'Dầu xả', N'Dầu xả dưỡng tóc', N'/images/category/cat_conditioner.jpg', 'active', 2, GETDATE()),
+(3, N'Dưỡng tóc', N'Sản phẩm dưỡng tóc', N'/images/category/cat_hair_mask.jpg', 'active', 3, GETDATE()),
+-- Danh mục con cấp 2: Chi tiết cho Chăm sóc cơ thể
+(4, N'Sữa tắm', N'Sữa tắm làm sạch cơ thể', N'/images/category/cat_body_wash.jpg', 'active', 1, GETDATE()),
+(4, N'Kem dưỡng thể', N'Kem dưỡng ẩm cho cơ thể', N'/images/category/cat_body_lotion.jpg', 'active', 2, GETDATE()),
+(4, N'Kem chống nắng body', N'Kem chống nắng cho cơ thể', N'/images/category/cat_body_sunscreen.jpg', 'active', 3, GETDATE()),
+-- Danh mục con cấp 2: Chi tiết cho Nước hoa
+(5, N'Nước hoa nữ', N'Nước hoa dành cho phái nữ', N'/images/category/cat_women_perfume.jpg', 'active', 1, GETDATE()),
+(5, N'Nước hoa nam', N'Nước hoa dành cho phái nam', N'/images/category/cat_men_perfume.jpg', 'active', 2, GETDATE()),
+(5, N'Nước hoa unisex', N'Nước hoa dành cho cả nam và nữ', N'/images/category/cat_unisex_perfume.jpg', 'active', 3, GETDATE());
+
+
+-- PRODUCTS
+-- TẤT CẢ SẢN PHẨM (Có thêm ReservedQuantity)
+INSERT INTO Products (CategoryID, ProductName, BrandName, ShortDescription, Price, SalePrice, Stock, ReservedQuantity, SKU, QuantityValue, QuantityUnit, Status, Featured, CreatedAt)
+VALUES
+-- SỮA RỬA MẶT (CategoryID = 6)
+(6, N'Sữa rửa mặt Rice Water Bright', N'Innisfree', N'Sữa rửa mặt làm sạch sâu với tinh chất gạo', 250000, 200000, 50, 0, 'RICE', 150, 'ml', 'active', 1, GETDATE()),
+(6, N'Sữa rửa mặt Gentle Foam', N'Cosrx', N'Sữa rửa mặt dịu nhẹ cho da nhạy cảm', 180000, 150000, 45, 0, 'GENTLE', 120, 'ml', 'active', 1, GETDATE()),
+(6, N'Sữa rửa mặt Salicylic Acid', N'CeraVe', N'Sữa rửa mặt trị mụn với BHA', 220000, 180000, 40, 0, 'SALICYLIC', 100, 'ml', 'active', 0, GETDATE()),
+(6, N'Sữa rửa mặt Hyaluronic Acid', N'Neutrogena', N'Sữa rửa mặt cấp ẩm với HA', 200000, 160000, 55, 0, 'HYALURONIC', 150, 'ml', 'active', 1, GETDATE()),
+(6, N'Sữa rửa mặt Tea Tree', N'The Body Shop', N'Sữa rửa mặt kháng khuẩn với tinh dầu tràm trà', 190000, 150000, 35, 0, 'TEATREE', 100, 'ml', 'active', 0, GETDATE()),
+(6, N'Sữa rửa mặt Vitamin C', N'Garnier', N'Sữa rửa mặt làm sáng da với Vitamin C', 160000, 130000, 60, 0, 'VITAMINC', 150, 'ml', 'active', 1, GETDATE()),
+
+-- KEM DƯỠNG (CategoryID = 7)
+(7, N'Kem dưỡng ẩm Hyaluronic Acid', N'Neutrogena', N'Kem dưỡng ẩm sâu với HA', 280000, 220000, 40, 0, 'HYALURONIC_MOIST', 50, 'ml', 'active', 1, GETDATE()),
+(7, N'Kem dưỡng chống lão hóa', N'Olay', N'Kem dưỡng chống lão hóa với Retinol', 350000, 280000, 35, 0, 'RETINOL_MOIST', 50, 'ml', 'active', 1, GETDATE()),
+(7, N'Kem dưỡng Vitamin C', N'Garnier', N'Kem dưỡng làm sáng da với Vitamin C', 200000, 160000, 50, 0, 'VITAMINC_MOIST', 50, 'ml', 'active', 0, GETDATE()),
+(7, N'Kem dưỡng Niacinamide', N'The Ordinary', N'Kem dưỡng kiểm soát dầu với Niacinamide', 180000, 150000, 45, 0, 'NIACINAMIDE_MOIST', 30, 'ml', 'active', 1, GETDATE()),
+(7, N'Kem dưỡng Ceramide', N'CeraVe', N'Kem dưỡng phục hồi hàng rào bảo vệ da', 250000, 200000, 40, 0, 'CERAMIDE_MOIST', 50, 'ml', 'active', 1, GETDATE()),
+(7, N'Kem dưỡng Peptide', N'Innisfree', N'Kem dưỡng chống lão hóa với Peptide', 320000, 260000, 30, 0, 'PEPTIDE_MOIST', 50, 'ml', 'active', 0, GETDATE()),
+
+-- MẶT NẠ (CategoryID = 8)
+(8, N'Mặt nạ Laneige Water Sleeping', N'Laneige', N'Mặt nạ ngủ dưỡng ẩm', 280000, 252000, 30, 0, 'WATERSLEEP', 70, 'ml', 'active', 1, GETDATE()),
+(8, N'Mặt nạ Innisfree Super Volcanic', N'Innisfree', N'Mặt nạ đất sét se khít lỗ chân lông', 150000, 120000, 50, 0, 'VOLCANIC', 100, 'ml', 'active', 0, GETDATE()),
+(8, N'Mặt nạ The Ordinary AHA 30%', N'The Ordinary', N'Mặt nạ tẩy tế bào chết hóa học', 320000, 288000, 15, 0, 'AHA30', 30, 'ml', 'active', 1, GETDATE()),
+(8, N'Mặt nạ Mediheal Tea Tree', N'Mediheal', N'Mặt nạ giấy cho da mụn', 50000, 40000, 100, 0, 'MEDIHEAL', 5, 'piece', 'active', 0, GETDATE()),
+(8, N'Mặt nạ Naruko Tea Tree', N'Naruko', N'Mặt nạ giấy kiểm soát dầu', 100000, 80000, 80, 0, 'NARUKO', 10, 'piece', 'active', 1, GETDATE()),
+(8, N'Mặt nạ Lululun Moisture', N'Lululun', N'Mặt nạ giấy dưỡng ẩm', 80000, 60000, 90, 0, 'LULULUN', 5, 'piece', 'active', 0, GETDATE()),
+
+-- TẨY TRANG (CategoryID = 9)
+(9, N'Nước tẩy trang Bioderma Sensibio', N'Bioderma', N'Cho da nhạy cảm', 280000, 252000, 40, 0, 'BIODERMA', 500, 'ml', 'active', 1, GETDATE()),
+(9, N'Dầu tẩy trang DHC Deep Cleansing', N'DHC', N'Làm sạch sâu', 220000, 180000, 35, 0, 'DHC', 200, 'ml', 'active', 0, GETDATE()),
+(9, N'Nước tẩy trang Garnier Micellar', N'Garnier', N'Làm sạch dịu nhẹ', 180000, 162000, 50, 0, 'GARNIER', 400, 'ml', 'active', 1, GETDATE()),
+(9, N'Nước tẩy trang L''Oréal Paris 3-in-1', N'L''Oréal', N'Làm sạch, dưỡng ẩm', 200000, 160000, 45, 0, 'LOREAL', 400, 'ml', 'active', 0, GETDATE()),
+(9, N'Nước tẩy trang Senka All Clear Water', N'Senka', N'Làm sạch lớp trang điểm', 150000, 135000, 60, 0, 'SENKA', 230, 'ml', 'active', 1, GETDATE()),
+(9, N'Nước tẩy trang Simple Kind To Skin', N'Simple', N'Không chứa hương liệu', 170000, 140000, 55, 0, 'SIMPLE', 200, 'ml', 'active', 0, GETDATE()),
+
+-- KEM CHỐNG NẮNG (CategoryID = 10)
+(10, N'Kem chống nắng Anessa Perfect UV', N'Anessa', N'SPF50+ PA++++', 450000, 405000, 35, 0, 'ANESSA', 60, 'ml', 'active', 1, GETDATE()),
+(10, N'Kem chống nắng Biore UV Aqua', N'Biore', N'Dạng gel SPF50+', 180000, 150000, 50, 0, 'BIORE', 50, 'ml', 'active', 0, GETDATE()),
+(10, N'Kem chống nắng La Roche-Posay', N'La Roche-Posay', N'Cho da nhạy cảm', 380000, 342000, 30, 0, 'LAROCHE', 50, 'ml', 'active', 1, GETDATE()),
+(10, N'Kem chống nắng Vichy Ideal Soleil', N'Vichy', N'Chống nắng dưỡng ẩm', 420000, 360000, 25, 0, 'VICHY', 50, 'ml', 'active', 0, GETDATE()),
+(10, N'Kem chống nắng The Saem Eco Earth', N'The Saem', N'Chống nắng vật lý', 200000, 180000, 40, 0, 'THESAEM', 50, 'ml', 'active', 1, GETDATE()),
+(10, N'Kem chống nắng Innisfree Intensive', N'Innisfree', N'Chống nắng cho da dầu', 250000, 200000, 45, 0, 'INNISFREE', 50, 'ml', 'active', 0, GETDATE()),
+
+-- DẦU GỘI (CategoryID = 11)
+(11, N'Dầu gội Head & Shoulders', N'Head & Shoulders', N'Trị gàu hiệu quả', 120000, 100000, 80, 0, 'HEADSHOULDERS', 400, 'ml', 'active', 1, GETDATE()),
+(11, N'Dầu gội Pantene Pro-V', N'Pantene', N'Dưỡng tóc mượt mà', 150000, 120000, 70, 0, 'PANTENE', 400, 'ml', 'active', 1, GETDATE()),
+(11, N'Dầu gội Clear Men', N'Clear', N'Cho nam giới', 180000, 150000, 60, 0, 'CLEAR', 400, 'ml', 'active', 0, GETDATE()),
+(11, N'Dầu gội Sunsilk', N'Sunsilk', N'Dưỡng tóc tự nhiên', 100000, 80000, 90, 0, 'SUNSILK', 400, 'ml', 'active', 0, GETDATE()),
+(11, N'Dầu gội Tresemmé', N'Tresemmé', N'Chuyên nghiệp', 200000, 160000, 50, 0, 'TRESEMME', 400, 'ml', 'active', 1, GETDATE()),
+(11, N'Dầu gội Dove', N'Dove', N'Dưỡng ẩm sâu', 140000, 110000, 75, 0, 'DOVE', 400, 'ml', 'active', 0, GETDATE()),
+
+-- DẦU XẢ (CategoryID = 12)
+(12, N'Dầu xả Pantene Pro-V', N'Pantene', N'Dưỡng tóc mượt mà', 130000, 100000, 70, 0, 'PANTENE_COND', 400, 'ml', 'active', 1, GETDATE()),
+(12, N'Dầu xả Head & Shoulders', N'Head & Shoulders', N'Trị gàu và dưỡng tóc', 110000, 90000, 75, 0, 'HEADSHOULDERS_COND', 400, 'ml', 'active', 0, GETDATE()),
+(12, N'Dầu xả Clear', N'Clear', N'Cho nam giới', 160000, 130000, 60, 0, 'CLEAR_COND', 400, 'ml', 'active', 1, GETDATE()),
+(12, N'Dầu xả Sunsilk', N'Sunsilk', N'Dưỡng tóc tự nhiên', 90000, 70000, 85, 0, 'SUNSILK_COND', 400, 'ml', 'active', 0, GETDATE()),
+(12, N'Dầu xả Tresemmé', N'Tresemmé', N'Chuyên nghiệp', 180000, 140000, 55, 0, 'TRESEMME_COND', 400, 'ml', 'active', 1, GETDATE()),
+(12, N'Dầu xả Dove', N'Dove', N'Dưỡng ẩm sâu', 120000, 95000, 70, 0, 'DOVE_COND', 400, 'ml', 'active', 0, GETDATE()),
+
+-- DƯỠNG TÓC (CategoryID = 13)
+(13, N'Dầu dưỡng tóc Argan Oil', N'Moroccanoil', N'Dưỡng tóc với dầu Argan', 350000, 280000, 30, 0, 'ARGAN_OIL', 100, 'ml', 'active', 1, GETDATE()),
+(13, N'Serum dưỡng tóc Pantene', N'Pantene', N'Serum dưỡng tóc mượt mà', 180000, 150000, 45, 0, 'PANTENE_SERUM', 50, 'ml', 'active', 1, GETDATE()),
+(13, N'Dầu dưỡng tóc Coconut', N'OGX', N'Dưỡng tóc với dầu dừa', 220000, 180000, 40, 0, 'COCONUT_OIL', 100, 'ml', 'active', 0, GETDATE()),
+(13, N'Serum dưỡng tóc L''Oréal', N'L''Oréal', N'Serum chống rụng tóc', 250000, 200000, 35, 0, 'LOREAL_SERUM', 50, 'ml', 'active', 1, GETDATE()),
+(13, N'Dầu dưỡng tóc Jojoba', N'Desert Essence', N'Dưỡng tóc với dầu Jojoba', 200000, 160000, 40, 0, 'JOJOBA_OIL', 100, 'ml', 'active', 0, GETDATE()),
+(13, N'Serum dưỡng tóc Tresemmé', N'Tresemmé', N'Serum dưỡng tóc chuyên nghiệp', 160000, 130000, 50, 0, 'TRESEMME_SERUM', 50, 'ml', 'active', 1, GETDATE()),
+
+-- SỮA TẮM (CategoryID = 14)
+(14, N'Sữa tắm Dove', N'Dove', N'Sữa tắm dưỡng ẩm', 120000, 100000, 80, 0, 'DOVE_BODY', 400, 'ml', 'active', 1, GETDATE()),
+(14, N'Sữa tắm Lux', N'Lux', N'Sữa tắm thơm mát', 100000, 80000, 90, 0, 'LUX_BODY', 400, 'ml', 'active', 0, GETDATE()),
+(14, N'Sữa tắm Lifebuoy', N'Lifebuoy', N'Sữa tắm kháng khuẩn', 80000, 65000, 100, 0, 'LIFEBUOY_BODY', 400, 'ml', 'active', 1, GETDATE()),
+(14, N'Sữa tắm Palmolive', N'Palmolive', N'Sữa tắm tự nhiên', 110000, 90000, 85, 0, 'PALMOLIVE_BODY', 400, 'ml', 'active', 0, GETDATE()),
+(14, N'Sữa tắm Nivea', N'Nivea', N'Sữa tắm dưỡng ẩm', 130000, 110000, 75, 0, 'NIVEA_BODY', 400, 'ml', 'active', 1, GETDATE()),
+(14, N'Sữa tắm Fa', N'Fa', N'Sữa tắm thơm mát', 95000, 75000, 95, 0, 'FA_BODY', 400, 'ml', 'active', 0, GETDATE()),
+
+-- KEM DƯỠNG THỂ (CategoryID = 15)
+(15, N'Kem dưỡng thể Nivea', N'Nivea', N'Kem dưỡng ẩm cho cơ thể', 180000, 150000, 60, 0, 'NIVEA_LOTION', 200, 'ml', 'active', 1, GETDATE()),
+(15, N'Kem dưỡng thể Vaseline', N'Vaseline', N'Kem dưỡng ẩm sâu', 120000, 100000, 80, 0, 'VASELINE_LOTION', 200, 'ml', 'active', 1, GETDATE()),
+(15, N'Kem dưỡng thể Dove', N'Dove', N'Kem dưỡng ẩm mượt mà', 160000, 130000, 70, 0, 'DOVE_LOTION', 200, 'ml', 'active', 0, GETDATE()),
+(15, N'Kem dưỡng thể Palmer''s', N'Palmer''s', N'Kem dưỡng với bơ cacao', 200000, 160000, 50, 0, 'PALMERS_LOTION', 200, 'ml', 'active', 1, GETDATE()),
+(15, N'Kem dưỡng thể Aveeno', N'Aveeno', N'Kem dưỡng cho da nhạy cảm', 220000, 180000, 45, 0, 'AVEENO_LOTION', 200, 'ml', 'active', 0, GETDATE()),
+(15, N'Kem dưỡng thể Cetaphil', N'Cetaphil', N'Kem dưỡng dịu nhẹ', 190000, 150000, 55, 0, 'CETAPHIL_LOTION', 200, 'ml', 'active', 1, GETDATE()),
+
+-- KEM CHỐNG NẮNG BODY (CategoryID = 16)
+(16, N'Kem chống nắng body Nivea', N'Nivea', N'Kem chống nắng cho cơ thể', 250000, 200000, 40, 0, 'NIVEA_BODY_SUN', 200, 'ml', 'active', 1, GETDATE()),
+(16, N'Kem chống nắng body Banana Boat', N'Banana Boat', N'Kem chống nắng cao cấp', 300000, 240000, 35, 0, 'BANANA_BODY', 200, 'ml', 'active', 1, GETDATE()),
+(16, N'Kem chống nắng body Coppertone', N'Coppertone', N'Kem chống nắng thể thao', 280000, 220000, 40, 0, 'COPPERTONE_BODY', 200, 'ml', 'active', 0, GETDATE()),
+(16, N'Kem chống nắng body Hawaiian Tropic', N'Hawaiian Tropic', N'Kem chống nắng với hương dừa', 320000, 260000, 30, 0, 'HAWAIIAN_BODY', 200, 'ml', 'active', 1, GETDATE()),
+(16, N'Kem chống nắng body Neutrogena', N'Neutrogena', N'Kem chống nắng cho da nhạy cảm', 350000, 280000, 25, 0, 'NEUTROGENA_BODY', 200, 'ml', 'active', 0, GETDATE()),
+(16, N'Kem chống nắng body La Roche-Posay', N'La Roche-Posay', N'Kem chống nắng cao cấp', 400000, 320000, 20, 0, 'LAROCHE_BODY', 200, 'ml', 'active', 1, GETDATE()),
+
+-- NƯỚC HOA NỮ (CategoryID = 17)
+(17, N'Chanel N°5 EDP', N'Chanel', N'Nước hoa huyền thoại với hương hoa cổ điển', 2500000, 2000000, 25, 0, 'CHANEL5', 50, 'ml', 'active', 1, GETDATE()),
+(17, N'Dior J''adore EDP', N'Dior', N'Nước hoa nữ tính với hương hoa trắng', 2200000, 1800000, 30, 0, 'DIOR_JADORE', 50, 'ml', 'active', 1, GETDATE()),
+(17, N'YSL Black Opium EDP', N'Yves Saint Laurent', N'Nước hoa quyến rũ với hương cà phê', 1800000, 1500000, 35, 0, 'YSL_BLACK', 50, 'ml', 'active', 0, GETDATE()),
+(17, N'Marc Jacobs Daisy EDP', N'Marc Jacobs', N'Nước hoa tươi mới với hương hoa cúc', 1200000, 1000000, 40, 0, 'MARC_DAISY', 50, 'ml', 'active', 1, GETDATE()),
+(17, N'Viktor&Rolf Flowerbomb EDP', N'Viktor&Rolf', N'Nước hoa nổ hoa với hương hoa phong lan', 2000000, 1600000, 20, 0, 'VIKTOR_BOMB', 50, 'ml', 'active', 1, GETDATE()),
+(17, N'Jo Malone Wood Sage & Sea Salt', N'Jo Malone', N'Nước hoa tự nhiên với hương biển', 1500000, 1200000, 30, 0, 'JO_SAGE', 30, 'ml', 'active', 0, GETDATE()),
+
+-- NƯỚC HOA NAM (CategoryID = 18)
+(18, N'Dior Sauvage EDP', N'Dior', N'Nước hoa nam mạnh mẽ với hương gỗ', 2000000, 1600000, 35, 0, 'DIOR_SAUVAGE', 50, 'ml', 'active', 1, GETDATE()),
+(18, N'Bleu de Chanel EDP', N'Chanel', N'Nước hoa nam thanh lịch với hương gỗ', 2200000, 1800000, 30, 0, 'CHANEL_BLEU', 50, 'ml', 'active', 1, GETDATE()),
+(18, N'YSL La Nuit de L''Homme', N'Yves Saint Laurent', N'Nước hoa nam quyến rũ với hương gia vị', 1800000, 1500000, 25, 0, 'YSL_NUIT', 50, 'ml', 'active', 0, GETDATE()),
+(18, N'Tom Ford Tobacco Vanille', N'Tom Ford', N'Nước hoa nam sang trọng với hương thuốc lá', 3500000, 2800000, 15, 0, 'TOM_TOBACCO', 50, 'ml', 'active', 1, GETDATE()),
+(18, N'Acqua di Gio Profumo', N'Giorgio Armani', N'Nước hoa nam tươi mát với hương biển', 1900000, 1500000, 30, 0, 'ARMANI_ACQUA', 50, 'ml', 'active', 1, GETDATE()),
+(18, N'Versace Eros EDP', N'Versace', N'Nước hoa nam năng động với hương bạc hà', 1600000, 1300000, 35, 0, 'VERSACE_EROS', 50, 'ml', 'active', 0, GETDATE()),
+
+-- NƯỚC HOA UNISEX (CategoryID = 19)
+(19, N'Le Labo Santal 33', N'Le Labo', N'Nước hoa unisex với hương gỗ đàn hương', 2800000, 2200000, 20, 0, 'LELABO_SANTAL', 50, 'ml', 'active', 1, GETDATE()),
+(19, N'Byredo Gypsy Water', N'Byredo', N'Nước hoa unisex với hương vani và gỗ', 2500000, 2000000, 25, 0, 'BYREDO_GYPSY', 50, 'ml', 'active', 1, GETDATE()),
+(19, N'Maison Margiela Replica Jazz Club', N'Maison Margiela', N'Nước hoa unisex với hương rượu rum', 1800000, 1500000, 30, 0, 'MARGIELA_JAZZ', 50, 'ml', 'active', 0, GETDATE()),
+(19, N'Diptyque Philosykos EDP', N'Diptyque', N'Nước hoa unisex với hương quả sung', 1600000, 1300000, 25, 0, 'DIPTYQUE_FIG', 50, 'ml', 'active', 1, GETDATE()),
+(19, N'Atelier Cologne Orange Sanguine', N'Atelier Cologne', N'Nước hoa unisex với hương cam tươi', 1400000, 1100000, 35, 0, 'ATELIER_ORANGE', 30, 'ml', 'active', 1, GETDATE()),
+(19, N'Commodity Book', N'Commodity', N'Nước hoa unisex với hương giấy và gỗ', 1200000, 1000000, 30, 0, 'COMMODITY_BOOK', 50, 'ml', 'active', 0, GETDATE());
+
+
+-- PRODUCT DETAILS
+INSERT INTO ProductDetails (ProductID, Description, Ingredients, Origin, SkinConcerns, StorageInstructions, HowToUse, ManufactureDate, ExpiryDate)
+VALUES
+(1, N'Sữa rửa mặt làm sạch sâu với tinh chất gạo, giúp làm sáng da và loại bỏ bụi bẩn', N'Water, Rice Extract, Glycerin, Sodium Laureth Sulfate', N'Hàn Quốc', N'Da xỉn màu, thiếu sức sống', N'Bảo quản nơi khô ráo', N'Thoa lên da ẩm, massage nhẹ rồi rửa sạch', '2024-01-01', '2027-01-01'),
+(2, N'Sữa rửa mặt dịu nhẹ cho da nhạy cảm, không gây kích ứng', N'Water, Glycerin, Betaine, Panthenol', N'Hàn Quốc', N'Da nhạy cảm, khô', N'Bảo quản nơi khô ráo', N'Tạo bọt, massage nhẹ rồi rửa sạch', '2024-02-01', '2027-02-01'),
+(3, N'Sữa rửa mặt trị mụn với BHA, giúp làm sạch sâu lỗ chân lông', N'Water, Salicylic Acid, Glycerin, Ceramides', N'Mỹ', N'Da mụn, dầu', N'Bảo quản nơi khô ráo', N'Tạo bọt, massage nhẹ rồi rửa sạch', '2024-03-01', '2027-03-01'),
+(4, N'Sữa rửa mặt cấp ẩm với Hyaluronic Acid, giữ ẩm cho da', N'Water, Hyaluronic Acid, Glycerin, Sodium Laureth Sulfate', N'Mỹ', N'Da khô, thiếu ẩm', N'Bảo quản nơi khô ráo', N'Tạo bọt, massage nhẹ rồi rửa sạch', '2024-04-01', '2027-04-01'),
+(5, N'Sữa rửa mặt kháng khuẩn với tinh dầu tràm trà, giúp giảm mụn', N'Water, Tea Tree Oil, Glycerin, Sodium Laureth Sulfate', N'Anh', N'Da mụn, dầu', N'Bảo quản nơi khô ráo', N'Tạo bọt, massage nhẹ rồi rửa sạch', '2024-05-01', '2027-05-01'),
+(6, N'Sữa rửa mặt làm sáng da với Vitamin C, giúp đều màu da', N'Water, Vitamin C, Glycerin, Sodium Laureth Sulfate', N'Pháp', N'Da xỉn màu, thâm nám', N'Bảo quản nơi khô ráo', N'Tạo bọt, massage nhẹ rồi rửa sạch', '2024-06-01', '2027-06-01'),
+
+-- CHI TIẾT SẢN PHẨM - KEM DƯỠNG (ProductID 7-12)
+(7, N'Kem dưỡng ẩm sâu với Hyaluronic Acid, giữ ẩm 24h', N'Water, Hyaluronic Acid, Glycerin, Dimethicone', N'Mỹ', N'Da khô, thiếu ẩm', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt và cổ sau khi rửa mặt', '2024-02-20', '2027-02-20'),
+(8, N'Kem dưỡng chống lão hóa với Retinol, giảm nếp nhăn', N'Water, Retinol, Glycerin, Peptides', N'Mỹ', N'Lão hóa, nếp nhăn', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt và cổ, sử dụng 2 lần/ngày', '2024-03-10', '2027-03-10'),
+(9, N'Kem dưỡng làm sáng da với Vitamin C, đều màu da', N'Water, Vitamin C, Glycerin, Niacinamide', N'Pháp', N'Da xỉn màu, thâm nám', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt và cổ', '2024-02-25', '2027-02-25'),
+(10, N'Kem dưỡng kiểm soát dầu với Niacinamide, giảm bóng nhờn', N'Water, Niacinamide, Glycerin, Zinc PCA', N'Canada', N'Da dầu, mụn', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt và cổ', '2024-03-15', '2027-03-15'),
+(11, N'Kem dưỡng phục hồi hàng rào bảo vệ da với Ceramides', N'Water, Ceramides, Glycerin, Hyaluronic Acid', N'Mỹ', N'Da nhạy cảm, khô', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt và cổ', '2024-04-01', '2027-04-01'),
+(12, N'Kem dưỡng chống lão hóa với Peptide, tăng cường collagen', N'Water, Peptides, Glycerin, Vitamin E', N'Hàn Quốc', N'Lão hóa, nếp nhăn', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt và cổ', '2024-05-01', '2027-05-01'),
+
+-- CHI TIẾT SẢN PHẨM - MẶT NẠ (ProductID 13-18)
+(13, N'Mặt nạ ngủ dưỡng ẩm sâu với công nghệ Water Sleeping', N'Water, Glycerin, Betaine, Sodium Hyaluronate', N'Hàn Quốc', N'Da khô, thiếu ẩm', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt trước khi đi ngủ, không cần rửa', '2024-01-20', '2027-01-20'),
+(14, N'Mặt nạ đất sét se khít lỗ chân lông và kiểm soát dầu', N'Water, Kaolin, Bentonite, Glycerin', N'Hàn Quốc', N'Da dầu, lỗ chân lông to', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt, để khô 10-15 phút rồi rửa sạch', '2024-03-05', '2027-03-05'),
+(15, N'Mặt nạ tẩy tế bào chết hóa học AHA 30% + BHA 2%', N'Water, Glycolic Acid, Lactic Acid, Salicylic Acid', N'Canada', N'Da xỉn màu, tế bào chết', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Thoa đều lên mặt, để 10 phút rồi rửa sạch, chỉ dùng 1-2 lần/tuần', '2024-02-10', '2027-02-10'),
+(16, N'Mặt nạ giấy chiết xuất tràm trà cho da mụn', N'Water, Melaleuca Alternifolia (Tea Tree) Leaf Extract, Glycerin', N'Hàn Quốc', N'Da mụn, dầu', N'Bảo quản nơi khô ráo', N'Đắp lên mặt 15-20 phút, massage tinh chất còn lại', '2024-04-01', '2027-04-01'),
+(17, N'Mặt nạ giấy kiểm soát dầu, giảm mụn', N'Water, Tea Tree Oil, Glycerin', N'Đài Loan', N'Da dầu, mụn', N'Bảo quản nơi khô ráo', N'Đắp lên mặt 15-20 phút, massage tinh chất còn lại', '2024-05-01', '2027-05-01'),
+(18, N'Mặt nạ giấy dưỡng ẩm sâu', N'Water, Glycerin, Hyaluronic Acid', N'Nhật Bản', N'Da khô, thiếu ẩm', N'Bảo quản nơi khô ráo', N'Đắp lên mặt 15-20 phút, massage tinh chất còn lại', '2024-06-01', '2027-06-01'),
+
+-- CHI TIẾT SẢN PHẨM - TẨY TRANG (ProductID 19-24)
+(19, N'Nước tẩy trang dịu nhẹ cho da nhạy cảm', N'Water, Glycerin, Cucumis Sativus Fruit Extract, Sodium Citrate', N'Pháp', N'Da nhạy cảm', N'Bảo quản nơi khô ráo', N'Thấm ướt bông tẩy trang, lau nhẹ nhàng trên mặt', '2024-01-25', '2027-01-25'),
+(20, N'Dầu tẩy trang làm sạch sâu mỹ phẩm và bụi bẩn', N'Olive Oil, Squalane, Vitamin E, Rosemary Leaf Extract', N'Nhật Bản', N'Tất cả loại da', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt khô, massage nhẹ rồi rửa sạch', '2024-02-28', '2027-02-28'),
+(21, N'Nước tẩy trang làm sạch dịu nhẹ', N'Water, Hexylene Glycol, Glycerin', N'Pháp', N'Da nhạy cảm', N'Bảo quản nơi khô ráo', N'Thấm ướt bông tẩy trang, lau nhẹ nhàng trên mặt', '2024-03-10', '2027-03-10'),
+(22, N'Nước tẩy trang 3-in-1 làm sạch, dưỡng ẩm', N'Water, Glycerin, Poloxamer 184', N'Pháp', N'Da khô, nhạy cảm', N'Bảo quản nơi khô ráo', N'Thấm ướt bông tẩy trang, lau nhẹ nhàng trên mặt', '2024-04-01', '2027-04-01'),
+(23, N'Nước tẩy trang làm sạch lớp trang điểm', N'Water, PEG-6 Caprylic/Capric Glycerides, Glycerin', N'Nhật Bản', N'Mọi loại da', N'Bảo quản nơi khô ráo', N'Thấm ướt bông tẩy trang, lau nhẹ nhàng trên mặt', '2024-05-01', '2027-05-01'),
+(24, N'Nước tẩy trang không chứa hương liệu, an toàn cho da', N'Water, Glycerin, Panthenol', N'Anh', N'Da nhạy cảm', N'Bảo quản nơi khô ráo', N'Thấm ướt bông tẩy trang, lau nhẹ nhàng trên mặt', '2024-06-01', '2027-06-01'),
+
+-- CHI TIẾT SẢN PHẨM - KEM CHỐNG NẮNG (ProductID 25-30)
+(25, N'Kem chống nắng vật lý SPF50+ PA++++ bảo vệ toàn diện', N'Water, Zinc Oxide, Titanium Dioxide, Glycerin', N'Nhật Bản', N'Tất cả loại da', N'Bảo quản nơi khô ráo, tránh nhiệt độ cao', N'Thoa đều lên mặt 30 phút trước khi ra ngoài', '2024-01-30', '2027-01-30'),
+(26, N'Kem chống nắng dạng gel SPF50+ PA++++ không nhờn rít', N'Water, Ethylhexyl Methoxycinnamate, Glycerin, Alcohol', N'Nhật Bản', N'Da dầu, hỗn hợp', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt 30 phút trước khi ra ngoài', '2024-02-15', '2027-02-15'),
+(27, N'Kem chống nắng cho da nhạy cảm SPF50+', N'Water, Titanium Dioxide, Glycerin, Thermal Spring Water', N'Pháp', N'Da nhạy cảm', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt 30 phút trước khi ra ngoài', '2024-03-01', '2027-03-01'),
+(28, N'Kem chống nắng dưỡng ẩm, không gây bết dính', N'Water, Glycerin, Octocrylene, Mexoryl XL', N'Pháp', N'Da khô, thiếu ẩm', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt 30 phút trước khi ra ngoài', '2024-04-01', '2027-04-01'),
+(29, N'Kem chống nắng vật lý, không gây kích ứng', N'Water, Zinc Oxide, Titanium Dioxide, Glycerin', N'Hàn Quốc', N'Da nhạy cảm', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt 30 phút trước khi ra ngoài', '2024-05-01', '2027-05-01'),
+(30, N'Kem chống nắng kiểm soát dầu, không gây bí da', N'Water, Silica, Glycerin, Green Tea Extract', N'Hàn Quốc', N'Da dầu, hỗn hợp', N'Bảo quản nơi khô ráo', N'Thoa đều lên mặt 30 phút trước khi ra ngoài', '2024-06-01', '2027-06-01'),
+-- CHI TIẾT SẢN PHẨM - DẦU GỘI (ProductID 31-36)
+(31, N'Dầu gội trị gàu hiệu quả với Zinc Pyrithione', N'Water, Sodium Laureth Sulfate, Zinc Pyrithione, Glycerin', N'Mỹ', N'Tóc gàu, ngứa da đầu', N'Bảo quản nơi khô ráo', N'Làm ướt tóc, thoa dầu gội, massage nhẹ rồi xả sạch', '2024-01-15', '2027-01-15'),
+(32, N'Dầu gội dưỡng tóc mượt mà với Pro-Vitamin B5', N'Water, Sodium Laureth Sulfate, Panthenol, Glycerin', N'Mỹ', N'Tóc khô, xơ rối', N'Bảo quản nơi khô ráo', N'Làm ướt tóc, thoa dầu gội, massage nhẹ rồi xả sạch', '2024-02-10', '2027-02-10'),
+(33, N'Dầu gội chuyên biệt cho nam giới', N'Water, Sodium Laureth Sulfate, Menthol, Glycerin', N'Mỹ', N'Tóc nam giới, da đầu nhờn', N'Bảo quản nơi khô ráo', N'Làm ướt tóc, thoa dầu gội, massage nhẹ rồi xả sạch', '2024-03-05', '2027-03-05'),
+(34, N'Dầu gội dưỡng tóc tự nhiên với chiết xuất thảo mộc', N'Water, Sodium Laureth Sulfate, Herbal Extracts, Glycerin', N'Anh', N'Tóc yếu, rụng tóc', N'Bảo quản nơi khô ráo', N'Làm ướt tóc, thoa dầu gội, massage nhẹ rồi xả sạch', '2024-04-01', '2027-04-01'),
+(35, N'Dầu gội chuyên nghiệp cho salon', N'Water, Sodium Laureth Sulfate, Keratin, Glycerin', N'Mỹ', N'Tóc hư tổn, cần phục hồi', N'Bảo quản nơi khô ráo', N'Làm ướt tóc, thoa dầu gội, massage nhẹ rồi xả sạch', '2024-05-01', '2027-05-01'),
+(36, N'Dầu gội dưỡng ẩm sâu với 1/4 kem dưỡng', N'Water, Sodium Laureth Sulfate, Glycerin, Panthenol', N'Anh', N'Tóc khô, thiếu ẩm', N'Bảo quản nơi khô ráo', N'Làm ướt tóc, thoa dầu gội, massage nhẹ rồi xả sạch', '2024-06-01', '2027-06-01'),
+
+-- CHI TIẾT SẢN PHẨM - DẦU XẢ (ProductID 37-42)
+(37, N'Dầu xả dưỡng tóc mượt mà với Pro-Vitamin B5', N'Water, Stearalkonium Chloride, Panthenol, Glycerin', N'Mỹ', N'Tóc khô, xơ rối', N'Bảo quản nơi khô ráo', N'Thoa lên tóc ẩm, để 2-3 phút rồi xả sạch', '2024-01-20', '2027-01-20'),
+(38, N'Dầu xả trị gàu và dưỡng tóc', N'Water, Stearalkonium Chloride, Zinc Pyrithione, Glycerin', N'Mỹ', N'Tóc gàu, ngứa da đầu', N'Bảo quản nơi khô ráo', N'Thoa lên tóc ẩm, để 2-3 phút rồi xả sạch', '2024-02-15', '2027-02-15'),
+(39, N'Dầu xả chuyên biệt cho nam giới', N'Water, Stearalkonium Chloride, Menthol, Glycerin', N'Mỹ', N'Tóc nam giới, da đầu nhờn', N'Bảo quản nơi khô ráo', N'Thoa lên tóc ẩm, để 2-3 phút rồi xả sạch', '2024-03-10', '2027-03-10'),
+(40, N'Dầu xả dưỡng tóc tự nhiên với chiết xuất thảo mộc', N'Water, Stearalkonium Chloride, Herbal Extracts, Glycerin', N'Anh', N'Tóc yếu, rụng tóc', N'Bảo quản nơi khô ráo', N'Thoa lên tóc ẩm, để 2-3 phút rồi xả sạch', '2024-04-05', '2027-04-05'),
+(41, N'Dầu xả chuyên nghiệp cho salon', N'Water, Stearalkonium Chloride, Keratin, Glycerin', N'Mỹ', N'Tóc hư tổn, cần phục hồi', N'Bảo quản nơi khô ráo', N'Thoa lên tóc ẩm, để 2-3 phút rồi xả sạch', '2024-05-10', '2027-05-10'),
+(42, N'Dầu xả dưỡng ẩm sâu với 1/4 kem dưỡng', N'Water, Stearalkonium Chloride, Glycerin, Panthenol', N'Anh', N'Tóc khô, thiếu ẩm', N'Bảo quản nơi khô ráo', N'Thoa lên tóc ẩm, để 2-3 phút rồi xả sạch', '2024-06-15', '2027-06-15'),
+
+-- CHI TIẾT SẢN PHẨM - DƯỠNG TÓC (ProductID 43-48)
+(43, N'Dầu dưỡng tóc với dầu Argan nguyên chất', N'Argania Spinosa Kernel Oil, Cyclopentasiloxane, Dimethicone', N'Morocco', N'Tóc khô, hư tổn', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Thoa một lượng nhỏ lên tóc ẩm hoặc khô', '2024-01-25', '2027-01-25'),
+(44, N'Serum dưỡng tóc mượt mà với Pro-Vitamin B5', N'Water, Panthenol, Glycerin, Dimethicone', N'Mỹ', N'Tóc khô, xơ rối', N'Bảo quản nơi khô ráo', N'Thoa lên tóc ẩm sau khi gội, không cần xả', '2024-02-20', '2027-02-20'),
+(45, N'Dầu dưỡng tóc với dầu dừa nguyên chất', N'Cocos Nucifera Oil, Cyclopentasiloxane, Dimethicone', N'Philippines', N'Tóc khô, thiếu ẩm', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Thoa một lượng nhỏ lên tóc ẩm hoặc khô', '2024-03-15', '2027-03-15'),
+(46, N'Serum chống rụng tóc với Aminexil', N'Water, Aminexil, Glycerin, Panthenol', N'Pháp', N'Tóc rụng, yếu', N'Bảo quản nơi khô ráo', N'Thoa lên da đầu và tóc ẩm, massage nhẹ', '2024-04-10', '2027-04-10'),
+(47, N'Dầu dưỡng tóc với dầu Jojoba tự nhiên', N'Simmondsia Chinensis Seed Oil, Cyclopentasiloxane, Dimethicone', N'Mỹ', N'Tóc khô, thiếu ẩm', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Thoa một lượng nhỏ lên tóc ẩm hoặc khô', '2024-05-05', '2027-05-05'),
+(48, N'Serum dưỡng tóc chuyên nghiệp cho salon', N'Water, Keratin, Glycerin, Panthenol', N'Mỹ', N'Tóc hư tổn, cần phục hồi', N'Bảo quản nơi khô ráo', N'Thoa lên tóc ẩm sau khi gội, không cần xả', '2024-06-20', '2027-06-20'),
+
+-- CHI TIẾT SẢN PHẨM - SỮA TẮM (ProductID 49-54)
+(49, N'Sữa tắm dưỡng ẩm với 1/4 kem dưỡng', N'Water, Sodium Laureth Sulfate, Glycerin, Panthenol', N'Anh', N'Da khô, thiếu ẩm', N'Bảo quản nơi khô ráo', N'Làm ướt cơ thể, thoa sữa tắm, massage nhẹ rồi xả sạch', '2024-01-30', '2027-01-30'),
+(50, N'Sữa tắm thơm mát với hương hoa', N'Water, Sodium Laureth Sulfate, Fragrance, Glycerin', N'Anh', N'Mọi loại da', N'Bảo quản nơi khô ráo', N'Làm ướt cơ thể, thoa sữa tắm, massage nhẹ rồi xả sạch', '2024-02-25', '2027-02-25'),
+(51, N'Sữa tắm kháng khuẩn với Triclosan', N'Water, Sodium Laureth Sulfate, Triclosan, Glycerin', N'Anh', N'Da nhạy cảm, cần kháng khuẩn', N'Bảo quản nơi khô ráo', N'Làm ướt cơ thể, thoa sữa tắm, massage nhẹ rồi xả sạch', '2024-03-20', '2027-03-20'),
+(52, N'Sữa tắm tự nhiên với chiết xuất thảo mộc', N'Water, Sodium Laureth Sulfate, Herbal Extracts, Glycerin', N'Anh', N'Da nhạy cảm', N'Bảo quản nơi khô ráo', N'Làm ướt cơ thể, thoa sữa tắm, massage nhẹ rồi xả sạch', '2024-04-15', '2027-04-15'),
+(53, N'Sữa tắm dưỡng ẩm với Glycerin', N'Water, Sodium Laureth Sulfate, Glycerin, Panthenol', N'Đức', N'Da khô, thiếu ẩm', N'Bảo quản nơi khô ráo', N'Làm ướt cơ thể, thoa sữa tắm, massage nhẹ rồi xả sạch', '2024-05-10', '2027-05-10'),
+(54, N'Sữa tắm thơm mát với hương trái cây', N'Water, Sodium Laureth Sulfate, Fragrance, Glycerin', N'Đức', N'Mọi loại da', N'Bảo quản nơi khô ráo', N'Làm ướt cơ thể, thoa sữa tắm, massage nhẹ rồi xả sạch', '2024-06-25', '2027-06-25'),
+
+-- CHI TIẾT SẢN PHẨM - KEM DƯỠNG THỂ (ProductID 55-60)
+(55, N'Kem dưỡng ẩm cho cơ thể với Glycerin', N'Water, Glycerin, Dimethicone, Panthenol', N'Đức', N'Da khô, thiếu ẩm', N'Bảo quản nơi khô ráo', N'Thoa đều lên cơ thể sau khi tắm', '2024-01-05', '2027-01-05'),
+(56, N'Kem dưỡng ẩm sâu với Petroleum Jelly', N'Petrolatum, Mineral Oil, Paraffin, Lanolin', N'Mỹ', N'Da rất khô, nứt nẻ', N'Bảo quản nơi khô ráo', N'Thoa đều lên cơ thể sau khi tắm', '2024-02-01', '2027-02-01'),
+(57, N'Kem dưỡng ẩm mượt mà với 1/4 kem dưỡng', N'Water, Glycerin, Dimethicone, Panthenol', N'Anh', N'Da khô, thiếu ẩm', N'Bảo quản nơi khô ráo', N'Thoa đều lên cơ thể sau khi tắm', '2024-03-01', '2027-03-01'),
+(58, N'Kem dưỡng với bơ cacao tự nhiên', N'Water, Theobroma Cacao Seed Butter, Glycerin, Dimethicone', N'Mỹ', N'Da khô, thiếu ẩm', N'Bảo quản nơi khô ráo', N'Thoa đều lên cơ thể sau khi tắm', '2024-04-01', '2027-04-01'),
+(59, N'Kem dưỡng cho da nhạy cảm với Colloidal Oatmeal', N'Water, Avena Sativa Kernel Extract, Glycerin, Dimethicone', N'Mỹ', N'Da nhạy cảm, kích ứng', N'Bảo quản nơi khô ráo', N'Thoa đều lên cơ thể sau khi tắm', '2024-05-01', '2027-05-01'),
+(60, N'Kem dưỡng dịu nhẹ cho da nhạy cảm', N'Water, Glycerin, Dimethicone, Panthenol', N'Mỹ', N'Da nhạy cảm', N'Bảo quản nơi khô ráo', N'Thoa đều lên cơ thể sau khi tắm', '2024-06-01', '2027-06-01'),
+
+-- CHI TIẾT SẢN PHẨM - KEM CHỐNG NẮNG BODY (ProductID 61-66)
+(61, N'Kem chống nắng cho cơ thể SPF30', N'Water, Octocrylene, Glycerin, Dimethicone', N'Đức', N'Tất cả loại da', N'Bảo quản nơi khô ráo, tránh nhiệt độ cao', N'Thoa đều lên cơ thể 30 phút trước khi ra ngoài', '2024-01-10', '2027-01-10'),
+(62, N'Kem chống nắng cao cấp cho cơ thể SPF50', N'Water, Avobenzone, Octocrylene, Glycerin', N'Mỹ', N'Tất cả loại da', N'Bảo quản nơi khô ráo, tránh nhiệt độ cao', N'Thoa đều lên cơ thể 30 phút trước khi ra ngoài', '2024-02-05', '2027-02-05'),
+(63, N'Kem chống nắng thể thao cho cơ thể SPF50', N'Water, Octocrylene, Avobenzone, Glycerin', N'Mỹ', N'Da hoạt động nhiều', N'Bảo quản nơi khô ráo, tránh nhiệt độ cao', N'Thoa đều lên cơ thể 30 phút trước khi ra ngoài', '2024-03-01', '2027-03-01'),
+(64, N'Kem chống nắng với hương dừa cho cơ thể SPF30', N'Water, Octocrylene, Fragrance, Glycerin', N'Mỹ', N'Tất cả loại da', N'Bảo quản nơi khô ráo, tránh nhiệt độ cao', N'Thoa đều lên cơ thể 30 phút trước khi ra ngoài', '2024-04-01', '2027-04-01'),
+(65, N'Kem chống nắng cho da nhạy cảm SPF50', N'Water, Titanium Dioxide, Zinc Oxide, Glycerin', N'Mỹ', N'Da nhạy cảm', N'Bảo quản nơi khô ráo, tránh nhiệt độ cao', N'Thoa đều lên cơ thể 30 phút trước khi ra ngoài', '2024-05-01', '2027-05-01'),
+(66, N'Kem chống nắng cao cấp cho cơ thể SPF50+', N'Water, Avobenzone, Octocrylene, Mexoryl XL', N'Pháp', N'Tất cả loại da', N'Bảo quản nơi khô ráo, tránh nhiệt độ cao', N'Thoa đều lên cơ thể 30 phút trước khi ra ngoài', '2024-06-01', '2027-06-01'),
+
+-- CHI TIẾT SẢN PHẨM - NƯỚC HOA (ProductID 67-84)
+(67, N'Hương hoa cổ điển, sang trọng, lâu phai', N'Alcohol, Parfum, Linalool, Citronellol', N'Pháp', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(68, N'Hương hoa trắng nữ tính, thanh lịch', N'Alcohol, Parfum, Limonene, Benzyl Alcohol', N'Pháp', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(69, N'Hương cà phê quyến rũ, ngọt ngào', N'Alcohol, Parfum, Coffee, Vanillin', N'Pháp', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(70, N'Hương hoa cúc tươi mới, trẻ trung', N'Alcohol, Parfum, Daisy, Musk', N'Mỹ', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(71, N'Hương hoa phong lan nồng nàn, bùng nổ', N'Alcohol, Parfum, Orchid, Patchouli', N'Hà Lan', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(72, N'Hương biển tự nhiên, thanh mát', N'Alcohol, Parfum, Sage, Sea Salt', N'Anh', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+
+(73, N'Hương gỗ mạnh mẽ, nam tính', N'Alcohol, Parfum, Ambroxan, Bergamot', N'Pháp', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(74, N'Hương gỗ thanh lịch, sang trọng', N'Alcohol, Parfum, Sandalwood, Cedar', N'Pháp', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(75, N'Hương gia vị quyến rũ, bí ẩn', N'Alcohol, Parfum, Cardamom, Vetiver', N'Pháp', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(76, N'Hương thuốc lá sang trọng, ấm áp', N'Alcohol, Parfum, Tobacco, Vanilla', N'Mỹ', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(77, N'Hương biển tươi mát, nam tính', N'Alcohol, Parfum, Marine Notes, Incense', N'Ý', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(78, N'Hương bạc hà năng động, trẻ trung', N'Alcohol, Parfum, Mint, Tonka Bean', N'Ý', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+
+(79, N'Hương gỗ đàn hương unisex, cá tính', N'Alcohol, Parfum, Sandalwood, Papyrus', N'Mỹ', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(80, N'Hương vani và gỗ unisex, nhẹ nhàng', N'Alcohol, Parfum, Vanilla, Juniper', N'Thụy Điển', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(81, N'Hương rượu rum unisex, ấm áp', N'Alcohol, Parfum, Rum, Tobacco', N'Pháp', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(82, N'Hương quả sung unisex, tươi mát', N'Alcohol, Parfum, Fig, Cedar', N'Pháp', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(83, N'Hương cam tươi unisex, năng động', N'Alcohol, Parfum, Orange, Jasmine', N'Pháp', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01'),
+(84, N'Hương giấy và gỗ unisex, độc đáo', N'Alcohol, Parfum, Sandalwood, Paper Accord', N'Mỹ', N'Mọi loại da', N'Bảo quản nơi khô ráo, tránh ánh sáng', N'Xịt lên cổ tay, sau tai, cổ', '2024-01-01', '2029-01-01');
+
+-- PRODUCT IMAGES
+-- HÌNH ẢNH SẢN PHẨM - HOÀN CHỈNH CHO TẤT CẢ 84 SẢN PHẨM
+INSERT INTO ProductImages (ProductID, ImageURL, IsMainImage, DisplayOrder)
+VALUES 
+-- SỮA RỬA MẶT (ProductID 1-6)
+(1, N'/images/product/rice_cleanser_main.jpg', 1, 0),
+(1, N'/images/product/rice_cleanser_side.jpg', 0, 1),
+(2, N'/images/product/gentle_foam_main.jpg', 1, 0),
+(2, N'/images/product/gentle_foam_side.jpg', 0, 1),
+(3, N'/images/product/salicylic_cleanser_main.jpg', 1, 0),
+(3, N'/images/product/salicylic_cleanser_side.jpg', 0, 1),
+(4, N'/images/product/hyaluronic_cleanser_main.jpg', 1, 0),
+(4, N'/images/product/hyaluronic_cleanser_side.jpg', 0, 1),
+(5, N'/images/product/tea_tree_cleanser_main.jpg', 1, 0),
+(5, N'/images/product/tea_tree_cleanser_side.jpg', 0, 1),
+(6, N'/images/product/vitamin_c_cleanser_main.jpg', 1, 0),
+(6, N'/images/product/vitamin_c_cleanser_side.jpg', 0, 1),
+
+-- KEM DƯỠNG (ProductID 7-12)
+(7, N'/images/product/hyaluronic_moisturizer_main.jpg', 1, 0),
+(7, N'/images/product/hyaluronic_moisturizer_side.jpg', 0, 1),
+(8, N'/images/product/anti_aging_moisturizer_main.jpg', 1, 0),
+(8, N'/images/product/anti_aging_moisturizer_side.jpg', 0, 1),
+(9, N'/images/product/vitamin_c_moisturizer_main.jpg', 1, 0),
+(9, N'/images/product/vitamin_c_moisturizer_side.jpg', 0, 1),
+(10, N'/images/product/niacinamide_moisturizer_main.jpg', 1, 0),
+(10, N'/images/product/niacinamide_moisturizer_side.jpg', 0, 1),
+(11, N'/images/product/ceramide_moisturizer_main.jpg', 1, 0),
+(11, N'/images/product/ceramide_moisturizer_side.jpg', 0, 1),
+(12, N'/images/product/peptide_moisturizer_main.jpg', 1, 0),
+(12, N'/images/product/peptide_moisturizer_side.jpg', 0, 1),
+
+-- MẶT NẠ (ProductID 13-18)
+(13, N'/images/product/laneige_sleeping_mask_main.jpg', 1, 0),
+(13, N'/images/product/laneige_sleeping_mask_side.jpg', 0, 1),
+(14, N'/images/product/innisfree_volcanic_mask_main.jpg', 1, 0),
+(14, N'/images/product/innisfree_volcanic_mask_side.jpg', 0, 1),
+(15, N'/images/product/ordinary_aha_mask_main.jpg', 1, 0),
+(15, N'/images/product/ordinary_aha_mask_side.jpg', 0, 1),
+(16, N'/images/product/mediheal_tea_tree_mask_main.jpg', 1, 0),
+(16, N'/images/product/mediheal_tea_tree_mask_side.jpg', 0, 1),
+(17, N'/images/product/naruko_tea_tree_mask_main.jpg', 1, 0),
+(17, N'/images/product/naruko_tea_tree_mask_side.jpg', 0, 1),
+(18, N'/images/product/lululun_moisture_mask_main.jpg', 1, 0),
+(18, N'/images/product/lululun_moisture_mask_side.jpg', 0, 1),
+
+-- TẨY TRANG (ProductID 19-24)
+(19, N'/images/product/bioderma_sensibio_main.jpg', 1, 0),
+(19, N'/images/product/bioderma_sensibio_side.jpg', 0, 1),
+(20, N'/images/product/dhc_deep_cleansing_main.jpg', 1, 0),
+(20, N'/images/product/dhc_deep_cleansing_side.jpg', 0, 1),
+(21, N'/images/product/garnier_micellar_main.jpg', 1, 0),
+(21, N'/images/product/garnier_micellar_side.jpg', 0, 1),
+(22, N'/images/product/loreal_3in1_main.jpg', 1, 0),
+(22, N'/images/product/loreal_3in1_side.jpg', 0, 1),
+(23, N'/images/product/senka_all_clear_main.jpg', 1, 0),
+(23, N'/images/product/senka_all_clear_side.jpg', 0, 1),
+(24, N'/images/product/simple_kind_skin_main.jpg', 1, 0),
+(24, N'/images/product/simple_kind_skin_side.jpg', 0, 1),
+
+-- KEM CHỐNG NẮNG (ProductID 25-30)
+(25, N'/images/product/anessa_perfect_uv_main.jpg', 1, 0),
+(25, N'/images/product/anessa_perfect_uv_side.jpg', 0, 1),
+(26, N'/images/product/biore_uv_aqua_main.jpg', 1, 0),
+(26, N'/images/product/biore_uv_aqua_side.jpg', 0, 1),
+(27, N'/images/product/laroche_posay_anthelios_main.jpg', 1, 0),
+(27, N'/images/product/laroche_posay_anthelios_side.jpg', 0, 1),
+(28, N'/images/product/vichy_ideal_soleil_main.jpg', 1, 0),
+(28, N'/images/product/vichy_ideal_soleil_side.jpg', 0, 1),
+(29, N'/images/product/saem_eco_earth_main.jpg', 1, 0),
+(29, N'/images/product/saem_eco_earth_side.jpg', 0, 1),
+(30, N'/images/product/innisfree_intensive_main.jpg', 1, 0),
+(30, N'/images/product/innisfree_intensive_side.jpg', 0, 1),
+
+-- DẦU GỘI (ProductID 31-36)
+(31, N'/images/product/head_shoulders_shampoo_main.jpg', 1, 0),
+(31, N'/images/product/head_shoulders_shampoo_side.jpg', 0, 1),
+(32, N'/images/product/pantene_prov_shampoo_main.jpg', 1, 0),
+(32, N'/images/product/pantene_prov_shampoo_side.jpg', 0, 1),
+(33, N'/images/product/clear_men_shampoo_main.jpg', 1, 0),
+(33, N'/images/product/clear_men_shampoo_side.jpg', 0, 1),
+(34, N'/images/product/sunsilk_shampoo_main.jpg', 1, 0),
+(34, N'/images/product/sunsilk_shampoo_side.jpg', 0, 1),
+(35, N'/images/product/tresemme_shampoo_main.jpg', 1, 0),
+(35, N'/images/product/tresemme_shampoo_side.jpg', 0, 1),
+(36, N'/images/product/dove_shampoo_main.jpg', 1, 0),
+(36, N'/images/product/dove_shampoo_side.jpg', 0, 1),
+
+-- DẦU XẢ (ProductID 37-42)
+(37, N'/images/product/pantene_prov_conditioner_main.jpg', 1, 0),
+(37, N'/images/product/pantene_prov_conditioner_side.jpg', 0, 1),
+(38, N'/images/product/head_shoulders_conditioner_main.jpg', 1, 0),
+(38, N'/images/product/head_shoulders_conditioner_side.jpg', 0, 1),
+(39, N'/images/product/clear_conditioner_main.jpg', 1, 0),
+(39, N'/images/product/clear_conditioner_side.jpg', 0, 1),
+(40, N'/images/product/sunsilk_conditioner_main.jpg', 1, 0),
+(40, N'/images/product/sunsilk_conditioner_side.jpg', 0, 1),
+(41, N'/images/product/tresemme_conditioner_main.jpg', 1, 0),
+(41, N'/images/product/tresemme_conditioner_side.jpg', 0, 1),
+(42, N'/images/product/dove_conditioner_main.jpg', 1, 0),
+(42, N'/images/product/dove_conditioner_side.jpg', 0, 1),
+
+-- DƯỠNG TÓC (ProductID 43-48)
+(43, N'/images/product/moroccanoil_argan_main.jpg', 1, 0),
+(43, N'/images/product/moroccanoil_argan_side.jpg', 0, 1),
+(44, N'/images/product/pantene_serum_main.jpg', 1, 0),
+(44, N'/images/product/pantene_serum_side.jpg', 0, 1),
+(45, N'/images/product/ogx_coconut_oil_main.jpg', 1, 0),
+(45, N'/images/product/ogx_coconut_oil_side.jpg', 0, 1),
+(46, N'/images/product/loreal_anti_fall_serum_main.jpg', 1, 0),
+(46, N'/images/product/loreal_anti_fall_serum_side.jpg', 0, 1),
+(47, N'/images/product/desert_essence_jojoba_main.jpg', 1, 0),
+(47, N'/images/product/desert_essence_jojoba_side.jpg', 0, 1),
+(48, N'/images/product/tresemme_serum_main.jpg', 1, 0),
+(48, N'/images/product/tresemme_serum_side.jpg', 0, 1),
+
+-- SỮA TẮM (ProductID 49-54)
+(49, N'/images/product/dove_body_wash_main.jpg', 1, 0),
+(49, N'/images/product/dove_body_wash_side.jpg', 0, 1),
+(50, N'/images/product/lux_body_wash_main.jpg', 1, 0),
+(50, N'/images/product/lux_body_wash_side.jpg', 0, 1),
+(51, N'/images/product/lifebuoy_body_wash_main.jpg', 1, 0),
+(51, N'/images/product/lifebuoy_body_wash_side.jpg', 0, 1),
+(52, N'/images/product/palmolive_body_wash_main.jpg', 1, 0),
+(52, N'/images/product/palmolive_body_wash_side.jpg', 0, 1),
+(53, N'/images/product/nivea_body_wash_main.jpg', 1, 0),
+(53, N'/images/product/nivea_body_wash_side.jpg', 0, 1),
+(54, N'/images/product/fa_body_wash_main.jpg', 1, 0),
+(54, N'/images/product/fa_body_wash_side.jpg', 0, 1),
+
+-- KEM DƯỠNG THỂ (ProductID 55-60)
+(55, N'/images/product/nivea_body_lotion_main.jpg', 1, 0),
+(55, N'/images/product/nivea_body_lotion_side.jpg', 0, 1),
+(56, N'/images/product/vaseline_body_lotion_main.jpg', 1, 0),
+(56, N'/images/product/vaseline_body_lotion_side.jpg', 0, 1),
+(57, N'/images/product/dove_body_lotion_main.jpg', 1, 0),
+(57, N'/images/product/dove_body_lotion_side.jpg', 0, 1),
+(58, N'/images/product/palmers_cocoa_butter_main.jpg', 1, 0),
+(58, N'/images/product/palmers_cocoa_butter_side.jpg', 0, 1),
+(59, N'/images/product/aveeno_daily_moisturizer_main.jpg', 1, 0),
+(59, N'/images/product/aveeno_daily_moisturizer_side.jpg', 0, 1),
+(60, N'/images/product/cetaphil_daily_lotion_main.jpg', 1, 0),
+(60, N'/images/product/cetaphil_daily_lotion_side.jpg', 0, 1),
+
+-- KEM CHỐNG NẮNG BODY (ProductID 61-66)
+(61, N'/images/product/nivea_body_sunscreen_main.jpg', 1, 0),
+(61, N'/images/product/nivea_body_sunscreen_side.jpg', 0, 1),
+(62, N'/images/product/banana_boat_body_sunscreen_main.jpg', 1, 0),
+(62, N'/images/product/banana_boat_body_sunscreen_side.jpg', 0, 1),
+(63, N'/images/product/coppertone_sport_sunscreen_main.jpg', 1, 0),
+(63, N'/images/product/coppertone_sport_sunscreen_side.jpg', 0, 1),
+(64, N'/images/product/hawaiian_tropic_coconut_main.jpg', 1, 0),
+(64, N'/images/product/hawaiian_tropic_coconut_side.jpg', 0, 1),
+(65, N'/images/product/neutrogena_body_sunscreen_main.jpg', 1, 0),
+(65, N'/images/product/neutrogena_body_sunscreen_side.jpg', 0, 1),
+(66, N'/images/product/laroche_posay_body_sunscreen_main.jpg', 1, 0),
+(66, N'/images/product/laroche_posay_body_sunscreen_side.jpg', 0, 1),
+
+-- NƯỚC HOA NỮ (ProductID 67-72)
+(67, N'/images/product/chanel_no5_edp_main.jpg', 1, 0),
+(67, N'/images/product/chanel_no5_edp_side.jpg', 0, 1),
+(68, N'/images/product/dior_jadore_edp_main.jpg', 1, 0),
+(68, N'/images/product/dior_jadore_edp_side.jpg', 0, 1),
+(69, N'/images/product/ysl_black_opium_main.jpg', 1, 0),
+(69, N'/images/product/ysl_black_opium_side.jpg', 0, 1),
+(70, N'/images/product/marc_jacobs_daisy_main.jpg', 1, 0),
+(70, N'/images/product/marc_jacobs_daisy_side.jpg', 0, 1),
+(71, N'/images/product/viktor_rolf_flowerbomb_main.jpg', 1, 0),
+(71, N'/images/product/viktor_rolf_flowerbomb_side.jpg', 0, 1),
+(72, N'/images/product/jo_malone_wood_sage_main.jpg', 1, 0),
+(72, N'/images/product/jo_malone_wood_sage_side.jpg', 0, 1),
+
+-- NƯỚC HOA NAM (ProductID 73-78)
+(73, N'/images/product/dior_sauvage_edp_main.jpg', 1, 0),
+(73, N'/images/product/dior_sauvage_edp_side.jpg', 0, 1),
+(74, N'/images/product/chanel_bleu_edp_main.jpg', 1, 0),
+(74, N'/images/product/chanel_bleu_edp_side.jpg', 0, 1),
+(75, N'/images/product/ysl_la_nuit_main.jpg', 1, 0),
+(75, N'/images/product/ysl_la_nuit_side.jpg', 0, 1),
+(76, N'/images/product/tom_ford_tobacco_vanille_main.jpg', 1, 0),
+(76, N'/images/product/tom_ford_tobacco_vanille_side.jpg', 0, 1),
+(77, N'/images/product/armani_acqua_di_gio_main.jpg', 1, 0),
+(77, N'/images/product/armani_acqua_di_gio_side.jpg', 0, 1),
+(78, N'/images/product/versace_eros_edp_main.jpg', 1, 0),
+(78, N'/images/product/versace_eros_edp_side.jpg', 0, 1),
+
+-- NƯỚC HOA UNISEX (ProductID 79-84)
+(79, N'/images/product/le_labo_santal_33_main.jpg', 1, 0),
+(79, N'/images/product/le_labo_santal_33_side.jpg', 0, 1),
+(80, N'/images/product/byredo_gypsy_water_main.jpg', 1, 0),
+(80, N'/images/product/byredo_gypsy_water_side.jpg', 0, 1),
+(81, N'/images/product/margiela_jazz_club_main.jpg', 1, 0),
+(81, N'/images/product/margiela_jazz_club_side.jpg', 0, 1),
+(82, N'/images/product/diptyque_philosykos_main.jpg', 1, 0),
+(82, N'/images/product/diptyque_philosykos_side.jpg', 0, 1),
+(83, N'/images/product/atelier_cologne_orange_main.jpg', 1, 0),
+(83, N'/images/product/atelier_cologne_orange_side.jpg', 0, 1),
+(84, N'/images/product/commodity_book_main.jpg', 1, 0),
+(84, N'/images/product/commodity_book_side.jpg', 0, 1);
+
+
+-- CARTS
+INSERT INTO Carts (UserID, Status)
+VALUES 
+(2, 'active'),
+(3, 'active');
+
+-- CART ITEMS
+INSERT INTO CartItems (CartID, ProductID, Quantity, AddedAt)
+VALUES 
+(1, 1, 2, '2025-05-15 10:05:00'),
+(1, 2, 1, '2025-05-15 10:10:00'),
+(2, 3, 1, '2025-05-15 11:05:00');
+
+-- PAYMENT METHODS
+INSERT INTO PaymentMethods (MethodName, Description)
+VALUES 
+(N'Thanh toán khi nhận hàng (COD)', N'Thanh toán bằng tiền mặt khi nhận hàng'),
+(N'Chuyển khoản ngân hàng', N'Chuyển khoản qua tài khoản ngân hàng'),
+(N'Ví điện tử', N'Thanh toán qua Momo, ZaloPay');
+
+-- ORDERS
+INSERT INTO Orders (UserID, OrderNumber, Status, TotalAmount, DiscountAmount, ShippingFee, Tax, FinalAmount, PaymentMethodID, ShippingAddressID, BillingAddressID, Notes, CreatedAt)
+VALUES 
+(2, N'ORD-20250707-001', 'delivered', 540000.00, 54000.00, 30000.00, 0.00, 516000.00, 1, 1, 2, N'Giao cẩn thận, hàng dễ vỡ', '2025-05-10 14:00:00'),
+(2, N'ORD-20250707-002', 'cancelled', 300000.00, 0.00, 25000.00, 0.00, 325000.00, 2, 1, 2, NULL, '2025-05-12 16:00:00');
+
+-- ORDER ITEMS
+INSERT INTO OrderItems (OrderID, ProductID, ProductName, Quantity, UnitPrice, Subtotal)
+VALUES 
+(1, 1, N'Sữa rửa mặt Rice Water Bright 150ml', 2, 135000.00, 270000.00),
+(1, 2, N'Kem dưỡng Revitalift Anti-Aging 50ml', 1, 405000.00, 405000.00),
+(2, 3, N'Mặt nạ Effaclar 5 miếng', 1, 300000.00, 300000.00);
+
+-- PAYMENTS
+INSERT INTO Payments (OrderID, PaymentMethodID, TransactionID, Amount, Status, PaymentDate, PaymentDetails)
+VALUES 
+(1, 1, N'TXN001', 516000.00, 'unpaid', '2025-05-11 09:00:00', N'{"method": "cash"}'),
+(2, 2, N'TXN002', 325000.00, 'paid', '2025-05-12 16:30:00', N'{"bank": "Vietcombank"}');
+
+-- COUPONS
+INSERT INTO Coupons (Code, Description, DiscountType, DiscountValue, MinimumOrder, MaximumDiscount, UsageLimit, UsageCount, StartDate, EndDate, Status, CreatedAt)
+VALUES 
+(N'SKILLCREATE20', N'Giảm giá 20% cho sản phẩm chăm sóc da mặt', 'percentage', 20.00, 300000.00, 100000.00, 100, 10, '2025-05-01 00:00:00', '2025-05-31 23:59:59', 'active', '2025-04-30 10:00:00'),
+(N'NEWBIE50', N'Giảm 50K cho khách hàng mới', 'fixed_amount', 50000.00, 200000.00, 50000.00, 200, 5, '2025-05-01 00:00:00', '2025-06-30 23:59:59', 'active', '2025-04-30 10:30:00');
+
+-- COUPON PRODUCTS
+INSERT INTO CouponProducts (CouponID, ProductID)
+VALUES 
+(1, 1),
+(1, 2),
+(1, 3);
+
+-- COUPON USAGE
+INSERT INTO CouponUsage (CouponID, UserID, OrderID, DiscountAmount, UsedAt)
+VALUES 
+(1, 2, 1, 54000.00, '2025-05-10 14:05:00');
+
+-- INVENTORY LOGS
+INSERT INTO InventoryLogs (ProductID, QuantityBefore, QuantityAfter, ChangeType, Reason, ReferenceID, ReferenceType, ExpiryDate, CreatedAt)
+VALUES 
+(1, 50, 48, 'decrease', N'Bán hàng (đơn hàng ORD001)', 1, 'order', '2027-01-15', '2025-05-10 14:10:00'),
+(2, 25, 24, 'decrease', N'Bán hàng (đơn hàng ORD001)', 1, 'order', '2027-02-01', '2025-05-10 14:15:00'),
+(3, 40, 39, 'decrease', N'Bán hàng (đơn hàng ORD002)', 2, 'order', '2027-03-01', '2025-05-12 16:00:00'),
+(1, 48, 55, 'increase', N'Nhập kho mới', NULL, 'import', '2027-01-15', '2025-05-15 09:00:00');
+
+-- REVIEWS
+INSERT INTO Reviews (ProductID, UserID, OrderID, Rating, Comment, SkinCondition, ReviewDate, Status, IsVerifiedPurchase)
+VALUES 
+(1, 2, 1, 5, N'Sữa rửa mặt rất dịu nhẹ, da mình không bị khô sau khi dùng!', N'Da cải thiện độ mềm mịn', '2025-05-12 10:00:00', 'approved', 1),
+(2, 2, 1, 4, N'Kem dưỡng giúp da căng mịn, nhưng cần dùng đều đặn', N'Da sáng hơn sau 2 tuần', '2025-05-12 10:05:00', 'pending', 1);
+
+-- WISHLIST
+INSERT INTO Wishlist (UserID, ProductID, AddedAt)
+VALUES 
+(2, 2, '2025-05-14 11:00:00'),
+(2, 3, '2025-05-14 11:05:00');
+
+
+-- Trigger cập nhật UpdatedAt cho bảng Users
+GO
+
+CREATE TRIGGER trg_Users_Update
+ON Users
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE Users
+    SET UpdatedAt = GETDATE()
+    FROM Users U
+    INNER JOIN inserted i ON U.UserID = i.UserID;
+END;
+
+GO
+
+-- Trigger cập nhật UpdatedAt cho bảng Categories
+CREATE TRIGGER trg_Categories_Update
+ON Categories
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE Categories
+    SET UpdatedAt = GETDATE()
+    FROM Categories C
+    INNER JOIN inserted i ON C.CategoryID = i.CategoryID;
+END;
+
+GO
+
+-- Trigger cập nhật UpdatedAt cho bảng Products
+CREATE TRIGGER trg_Products_Update
+ON Products
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE Products
+    SET UpdatedAt = GETDATE()
+    FROM Products P
+    INNER JOIN inserted i ON P.ProductID = i.ProductID;
+END;
+
+GO
+
+-- Trigger cập nhật UpdatedAt cho bảng Orders
+CREATE TRIGGER trg_Orders_Update
+ON Orders
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE Orders
+    SET UpdatedAt = GETDATE()
+    FROM Orders O
+    INNER JOIN inserted i ON O.OrderID = i.OrderID;
+END;
+
+GO
+
+-- Trigger cập nhật UpdatedAt cho bảng Coupons
+CREATE TRIGGER trg_Coupons_Update
+ON Coupons
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE Coupons
+    SET UpdatedAt = GETDATE()
+    FROM Coupons C
+    INNER JOIN inserted i ON C.CouponID = i.CouponID;
+END;
+
+GO
+
+CREATE TRIGGER trg_Coupons_ValidDates
+ON Coupons
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM inserted
+        WHERE EndDate < StartDate
+    )
+    BEGIN
+        RAISERROR ('EndDate must be greater than or equal to StartDate.', 16, 1);
+        ROLLBACK TRANSACTION;
+    END
+END
+CREATE TRIGGER trg_Ensure_Single_Default_Address
+ON Addresses
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Chỉ xử lý những bản ghi có IsDefault = 1
+    UPDATE A
+    SET A.IsDefault = 0
+    FROM Addresses A
+    INNER JOIN Inserted I 
+        ON A.UserID = I.UserID
+       AND A.AddressType = I.AddressType         -- Cùng loại (shipping/billing)
+       AND A.AddressID != I.AddressID            -- Không phải địa chỉ vừa thêm/sửa
+       AND I.IsDefault = 1                       -- Chỉ khi bản ghi mới set mặc định
+       AND A.IsDeleted = 0;                      -- Chỉ cập nhật địa chỉ còn hiệu lực
+END;
+

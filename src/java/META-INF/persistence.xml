@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.1" xmlns="https://jakarta.ee/xml/ns/persistence"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_1.xsd">
+  <persistence-unit name="MY_PHAM_PU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>model.entity.Category</class>
+    <class>model.entity.Product</class>
+    <class>model.entity.ProductDetail</class>
+    <class>model.entity.ProductImage</class>
+    <class>model.entity.User</class>
+    <class>model.entity.Wishlist</class>
+    <class>model.entity.Order</class>
+    <class>model.entity.OrderItem</class>
+    
+    <class>model.entity.Review</class>
+    <class>model.entity.OrderStatusConverter</class>
+    <class>model.entity.PaymentMethod</class>
+        <class>model.entity.Address</class>
+        <class>model.entity.Cart</class>
+        <class>model.entity.CartItem</class>
+        <class>model.entity.Payment</class>
+        
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlserver://localhost\\MYPHAM:1401;databaseName=MyPham1;encrypt=true;trustServerCertificate=true"/>
+      <property name="jakarta.persistence.jdbc.user" value="SA"/>
+      <property name="jakarta.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+      <property name="jakarta.persistence.jdbc.password" value="Justice1234"/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+      <property name="hibernate.hbm2ddl.auto" value="none"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
+    </properties>
+  </persistence-unit>
+</persistence>

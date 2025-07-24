@@ -1,0 +1,105 @@
+#!/bin/bash
+
+# Script to create all 143 placeholder image files
+cd /Users/Documents/PRJ301_Netbeans/DuAnMyPham/web/images
+
+# Cleansers
+touch oil_cleanser_main.jpg oil_cleanser_side.jpg
+touch micellar_water_main.jpg micellar_water_side.jpg
+
+# Moisturizers
+touch hydrating_moisturizer_main.jpg hydrating_moisturizer_side.jpg
+touch anti_aging_moisturizer_main.jpg anti_aging_moisturizer_side.jpg
+touch gel_moisturizer_main.jpg gel_moisturizer_side.jpg
+touch night_moisturizer_main.jpg night_moisturizer_side.jpg
+touch sensitive_moisturizer_main.jpg sensitive_moisturizer_side.jpg
+
+# Masks
+touch clay_mask_main.jpg clay_mask_side.jpg
+touch sheet_mask_main.jpg sheet_mask_side.jpg
+touch hydrating_mask_main.jpg hydrating_mask_side.jpg
+touch brightening_mask_main.jpg brightening_mask_side.jpg
+touch anti_aging_mask_main.jpg anti_aging_mask_side.jpg
+
+# Makeup Removers
+touch makeup_remover_main.jpg makeup_remover_side.jpg
+touch cleansing_oil_main.jpg cleansing_oil_side.jpg
+touch micellar_remover_main.jpg micellar_remover_side.jpg
+touch wipes_main.jpg wipes_side.jpg
+touch balm_remover_main.jpg balm_remover_side.jpg
+
+# Sunscreens
+touch spf50_sunscreen_main.jpg spf50_sunscreen_side.jpg
+touch lightweight_sunscreen_main.jpg lightweight_sunscreen_side.jpg
+touch matte_sunscreen_main.jpg matte_sunscreen_side.jpg
+touch tinted_sunscreen_main.jpg tinted_sunscreen_side.jpg
+touch waterproof_sunscreen_main.jpg waterproof_sunscreen_side.jpg
+
+# Shampoos
+touch hydrating_shampoo_main.jpg hydrating_shampoo_side.jpg
+touch volumizing_shampoo_main.jpg volumizing_shampoo_side.jpg
+touch anti_dandruff_shampoo_main.jpg anti_dandruff_shampoo_side.jpg
+touch color_protect_shampoo_main.jpg color_protect_shampoo_side.jpg
+touch smoothing_shampoo_main.jpg smoothing_shampoo_side.jpg
+
+# Conditioners
+touch hydrating_conditioner_main.jpg hydrating_conditioner_side.jpg
+touch smoothing_conditioner_main.jpg smoothing_conditioner_side.jpg
+touch volumizing_conditioner_main.jpg volumizing_conditioner_side.jpg
+touch color_protect_conditioner_main.jpg color_protect_conditioner_side.jpg
+touch deep_conditioner_main.jpg deep_conditioner_side.jpg
+
+# Hair Care
+touch hair_oil_main.jpg hair_oil_side.jpg
+touch hair_serum_main.jpg hair_serum_side.jpg
+touch hair_mask_main.jpg hair_mask_side.jpg
+touch heat_protectant_main.jpg heat_protectant_side.jpg
+touch leave_in_conditioner_main.jpg leave_in_conditioner_side.jpg
+
+# Body Wash
+touch hydrating_body_wash_main.jpg hydrating_body_wash_side.jpg
+touch exfoliating_body_wash_main.jpg exfoliating_body_wash_side.jpg
+touch moisturizing_body_wash_main.jpg moisturizing_body_wash_side.jpg
+touch antibacterial_body_wash_main.jpg antibacterial_body_wash_side.jpg
+touch gentle_body_wash_main.jpg gentle_body_wash_side.jpg
+
+# Body Lotion
+touch hydrating_body_lotion_main.jpg hydrating_body_lotion_side.jpg
+touch firming_body_lotion_main.jpg firming_body_lotion_side.jpg
+touch anti_cellulite_lotion_main.jpg anti_cellulite_lotion_side.jpg
+touch whitening_body_lotion_main.jpg whitening_body_lotion_side.jpg
+touch soothing_body_lotion_main.jpg soothing_body_lotion_side.jpg
+
+# Body Sunscreen
+touch body_sunscreen_main.jpg body_sunscreen_side.jpg
+touch waterproof_body_sunscreen_main.jpg waterproof_body_sunscreen_side.jpg
+touch spray_body_sunscreen_main.jpg spray_body_sunscreen_side.jpg
+touch lightweight_body_sunscreen_main.jpg lightweight_body_sunscreen_side.jpg
+touch sport_body_sunscreen_main.jpg sport_body_sunscreen_side.jpg
+
+# Women's Perfumes
+touch floral_perfume_women_main.jpg floral_perfume_women_side.jpg
+touch oriental_perfume_women_main.jpg oriental_perfume_women_side.jpg
+touch fresh_perfume_women_main.jpg fresh_perfume_women_side.jpg
+touch woody_perfume_women_main.jpg woody_perfume_women_side.jpg
+touch fruity_perfume_women_main.jpg fruity_perfume_women_side.jpg
+touch romantic_perfume_women_main.jpg romantic_perfume_women_side.jpg
+
+# Men's Perfumes
+touch woody_perfume_men_main.jpg woody_perfume_men_side.jpg
+touch fresh_perfume_men_main.jpg fresh_perfume_men_side.jpg
+touch oriental_perfume_men_main.jpg oriental_perfume_men_side.jpg
+touch aquatic_perfume_men_main.jpg aquatic_perfume_men_side.jpg
+touch spicy_perfume_men_main.jpg spicy_perfume_men_side.jpg
+touch leather_perfume_men_main.jpg leather_perfume_men_side.jpg
+
+# Unisex Perfumes
+touch citrus_perfume_unisex_main.jpg citrus_perfume_unisex_side.jpg
+touch green_perfume_unisex_main.jpg green_perfume_unisex_side.jpg
+touch aromatic_perfume_unisex_main.jpg aromatic_perfume_unisex_side.jpg
+touch chypre_perfume_unisex_main.jpg chypre_perfume_unisex_side.jpg
+touch gourmand_perfume_unisex_main.jpg gourmand_perfume_unisex_side.jpg
+touch modern_perfume_unisex_main.jpg modern_perfume_unisex_side.jpg
+
+echo "Created all 143 placeholder image files!"
+ls -la *.jpg | wc -l 

@@ -1,0 +1,193 @@
+DANH SÁCH FILE ẢNH CẦN THIẾT CHO WEBSITE MỸ PHẨM
+==================================================
+
+CÁC FILE ẢNH HIỆN CÓ:
+- cat_skincare.jpg (đã có)
+- rice_cleanser_main.jpg (đã có) 
+- rice_cleanser_side.jpg (đã có)
+
+CÁC FILE ẢNH CẦN THÊM THEO DATABASE:
+
+=== SẢN PHẨM TẨY TRANG ===
+1. rice_cleanser_main.jpg (đã có)
+2. rice_cleanser_side.jpg (đã có)
+3. gentle_cleanser_main.jpg
+4. gentle_cleanser_side.jpg
+5. foaming_cleanser_main.jpg
+6. foaming_cleanser_side.jpg
+7. oil_cleanser_main.jpg
+8. oil_cleanser_side.jpg
+9. micellar_water_main.jpg
+10. micellar_water_side.jpg
+
+=== SẢN PHẨM DƯỠNG ẨM ===
+11. hydrating_moisturizer_main.jpg
+12. hydrating_moisturizer_side.jpg
+13. anti_aging_moisturizer_main.jpg
+14. anti_aging_moisturizer_side.jpg
+15. gel_moisturizer_main.jpg
+16. gel_moisturizer_side.jpg
+17. night_moisturizer_main.jpg
+18. night_moisturizer_side.jpg
+19. sensitive_moisturizer_main.jpg
+20. sensitive_moisturizer_side.jpg
+
+=== MẶT NẠ ===
+21. clay_mask_main.jpg
+22. clay_mask_side.jpg
+23. sheet_mask_main.jpg
+24. sheet_mask_side.jpg
+25. hydrating_mask_main.jpg
+26. hydrating_mask_side.jpg
+27. brightening_mask_main.jpg
+28. brightening_mask_side.jpg
+29. anti_aging_mask_main.jpg
+30. anti_aging_mask_side.jpg
+
+=== TẨY TRANG MAKEUP ===
+31. makeup_remover_main.jpg
+32. makeup_remover_side.jpg
+33. cleansing_oil_main.jpg
+34. cleansing_oil_side.jpg
+35. micellar_remover_main.jpg
+36. micellar_remover_side.jpg
+37. wipes_main.jpg
+38. wipes_side.jpg
+39. balm_remover_main.jpg
+40. balm_remover_side.jpg
+
+=== KEM CHỐNG NẮNG ===
+41. spf50_sunscreen_main.jpg
+42. spf50_sunscreen_side.jpg
+43. lightweight_sunscreen_main.jpg
+44. lightweight_sunscreen_side.jpg
+45. matte_sunscreen_main.jpg
+46. matte_sunscreen_side.jpg
+47. tinted_sunscreen_main.jpg
+48. tinted_sunscreen_side.jpg
+49. waterproof_sunscreen_main.jpg
+50. waterproof_sunscreen_side.jpg
+
+=== DẦU GỘI ===
+51. hydrating_shampoo_main.jpg
+52. hydrating_shampoo_side.jpg
+53. volumizing_shampoo_main.jpg
+54. volumizing_shampoo_side.jpg
+55. anti_dandruff_shampoo_main.jpg
+56. anti_dandruff_shampoo_side.jpg
+57. color_protect_shampoo_main.jpg
+58. color_protect_shampoo_side.jpg
+59. smoothing_shampoo_main.jpg
+60. smoothing_shampoo_side.jpg
+
+=== DẦU XẢ ===
+61. hydrating_conditioner_main.jpg
+62. hydrating_conditioner_side.jpg
+63. smoothing_conditioner_main.jpg
+64. smoothing_conditioner_side.jpg
+65. volumizing_conditioner_main.jpg
+66. volumizing_conditioner_side.jpg
+67. color_protect_conditioner_main.jpg
+68. color_protect_conditioner_side.jpg
+69. deep_conditioner_main.jpg
+70. deep_conditioner_side.jpg
+
+=== CHĂM SÓC TÓC ===
+71. hair_oil_main.jpg
+72. hair_oil_side.jpg
+73. hair_serum_main.jpg
+74. hair_serum_side.jpg
+75. hair_mask_main.jpg
+76. hair_mask_side.jpg
+77. heat_protectant_main.jpg
+78. heat_protectant_side.jpg
+79. leave_in_conditioner_main.jpg
+80. leave_in_conditioner_side.jpg
+
+=== SỮA TẮM ===
+81. hydrating_body_wash_main.jpg
+82. hydrating_body_wash_side.jpg
+83. exfoliating_body_wash_main.jpg
+84. exfoliating_body_wash_side.jpg
+85. moisturizing_body_wash_main.jpg
+86. moisturizing_body_wash_side.jpg
+87. antibacterial_body_wash_main.jpg
+88. antibacterial_body_wash_side.jpg
+89. gentle_body_wash_main.jpg
+90. gentle_body_wash_side.jpg
+
+=== KEM DƯỠNG THỂ ===
+91. hydrating_body_lotion_main.jpg
+92. hydrating_body_lotion_side.jpg
+93. firming_body_lotion_main.jpg
+94. firming_body_lotion_side.jpg
+95. anti_cellulite_lotion_main.jpg
+96. anti_cellulite_lotion_side.jpg
+97. whitening_body_lotion_main.jpg
+98. whitening_body_lotion_side.jpg
+99. soothing_body_lotion_main.jpg
+100. soothing_body_lotion_side.jpg
+
+=== KEM CHỐNG NẮNG TOÀN THÂN ===
+101. body_sunscreen_main.jpg
+102. body_sunscreen_side.jpg
+103. waterproof_body_sunscreen_main.jpg
+104. waterproof_body_sunscreen_side.jpg
+105. spray_body_sunscreen_main.jpg
+106. spray_body_sunscreen_side.jpg
+107. lightweight_body_sunscreen_main.jpg
+108. lightweight_body_sunscreen_side.jpg
+109. sport_body_sunscreen_main.jpg
+110. sport_body_sunscreen_side.jpg
+
+=== NƯỚC HOA NỮ ===
+111. floral_perfume_women_main.jpg
+112. floral_perfume_women_side.jpg
+113. oriental_perfume_women_main.jpg
+114. oriental_perfume_women_side.jpg
+115. fresh_perfume_women_main.jpg
+116. fresh_perfume_women_side.jpg
+117. woody_perfume_women_main.jpg
+118. woody_perfume_women_side.jpg
+119. fruity_perfume_women_main.jpg
+120. fruity_perfume_women_side.jpg
+121. romantic_perfume_women_main.jpg
+122. romantic_perfume_women_side.jpg
+
+=== NƯỚC HOA NAM ===
+123. woody_perfume_men_main.jpg
+124. woody_perfume_men_side.jpg
+125. fresh_perfume_men_main.jpg
+126. fresh_perfume_men_side.jpg
+127. oriental_perfume_men_main.jpg
+128. oriental_perfume_men_side.jpg
+129. aquatic_perfume_men_main.jpg
+130. aquatic_perfume_men_side.jpg
+131. spicy_perfume_men_main.jpg
+132. spicy_perfume_men_side.jpg
+133. leather_perfume_men_main.jpg
+134. leather_perfume_men_side.jpg
+
+=== NƯỚC HOA UNISEX ===
+135. citrus_perfume_unisex_main.jpg
+136. citrus_perfume_unisex_side.jpg
+137. green_perfume_unisex_main.jpg
+138. green_perfume_unisex_side.jpg
+139. aromatic_perfume_unisex_main.jpg
+140. aromatic_perfume_unisex_side.jpg
+141. chypre_perfume_unisex_main.jpg
+142. chypre_perfume_unisex_side.jpg
+143. gourmand_perfume_unisex_main.jpg
+144. gourmand_perfume_unisex_side.jpg
+145. modern_perfume_unisex_main.jpg
+146. modern_perfume_unisex_side.jpg
+
+TỔNG CỘNG: 146 file ảnh cần thiết
+- Đã có: 3 file
+- Cần thêm: 143 file
+
+LƯU Ý:
+- Tất cả file ảnh nên có định dạng .jpg
+- Kích thước khuyến nghị: 800x800px cho ảnh main, 400x400px cho ảnh side
+- Chất lượng ảnh: 72-150 DPI
+- Dung lượng file: dưới 500KB mỗi file 

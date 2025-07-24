@@ -1,0 +1,3938 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)http://localhost:8080/DuAnMyPham/wishlist -->
+<html class="no-js" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="context-path" content="/DuAnMyPham">
+    <title>Danh sách yêu thích - Cosmetics Shop</title>
+    
+    <!-- CSS -->
+    <link href="./Danh sách yêu thích - Cosmetics Shop_files/css" rel="stylesheet">
+    <link href="./Danh sách yêu thích - Cosmetics Shop_files/css(1)" rel="stylesheet">
+    <link href="./Danh sách yêu thích - Cosmetics Shop_files/css(2)" rel="stylesheet">
+    <link href="./Danh sách yêu thích - Cosmetics Shop_files/css(3)" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="http://localhost:8080/DuAnMyPham/assets/images/favicon.png">
+    <link rel="stylesheet" href="./Danh sách yêu thích - Cosmetics Shop_files/bootstrap.min.css">
+    <link rel="stylesheet" href="./Danh sách yêu thích - Cosmetics Shop_files/animate.min.css">
+    <link rel="stylesheet" href="./Danh sách yêu thích - Cosmetics Shop_files/font-awesome.min.css">
+    <link rel="stylesheet" href="./Danh sách yêu thích - Cosmetics Shop_files/nice-select.css">
+    <link rel="stylesheet" href="./Danh sách yêu thích - Cosmetics Shop_files/slick.min.css">
+    <link rel="stylesheet" href="./Danh sách yêu thích - Cosmetics Shop_files/style.css">
+    <link rel="stylesheet" href="./Danh sách yêu thích - Cosmetics Shop_files/main-color04.css">
+    
+    <style>
+        .wishlist-container {
+            padding: 60px 0;
+            background-color: #f8f9fa;
+        }
+        
+        .wishlist-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 0;
+            background: linear-gradient(45deg, rgba(231, 76, 60, 0.08), rgba(255, 118, 117, 0.08)); /* đỏ nhạt */
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wishlist-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, #e74c3c, #ff7675); /* đỏ */
+        }
+        
+        .wishlist-header h1 {
+            color: #2c3e50;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .wishlist-header h1 i {
+            background: linear-gradient(45deg, #e74c3c, #ff7675);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 10px;
+        }
+        
+        .wishlist-header p {
+            color: #666;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .wishlist-item {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wishlist-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(45deg, #e74c3c, #ff7675); /* đỏ */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .wishlist-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .wishlist-item:hover::before {
+            opacity: 1;
+        }
+        
+        .wishlist-item-image {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 4px solid white;
+        }
+        
+        .wishlist-item-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.18);
+        }
+        
+        .wishlist-item-info h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.4;
+            transition: color 0.3s ease;
+        }
+        
+        .wishlist-item-info h4:hover {
+            color: #e74c3c;
+        }
+        
+        .product-info-wrapper {
+            background: linear-gradient(to right, #f8f9fa, #ffffff);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 1px solid rgba(0,0,0,0.03);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+        }
+        
+        .wishlist-item-price {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #dee2e6;
+        }
+        
+        .current-price {
+            color: #7fad39;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .original-price {
+            color: #999;
+            font-size: 1.2rem;
+            text-decoration: line-through;
+        }
+        
+        .discount-percent {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        .product-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .wishlist-item-volume, 
+        .wishlist-item-category,
+        .wishlist-item-description,
+        .stock-status {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: #666;
+            font-size: 1.4rem;
+            line-height: 1.4;
+        }
+        
+        .wishlist-item-volume i,
+        .wishlist-item-category i,
+        .wishlist-item-description i {
+            color: #7fad39;
+            width: 16px;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .wishlist-item-description {
+            font-style: italic;
+            color: #777;
+        }
+
+        .wishlist-item-description i {
+            color: #6c757d;
+        }
+         .stock-status {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            border-radius: 15px;
+            position: relative;
+            flex-wrap: wrap;
+        }
+        
+        .stock-status.in-stock {
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.08);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .stock-status.out-of-stock {
+            color: #b71c1c;
+            background: rgba(183, 28, 28, 0.08);
+            animation: pulse 2s infinite;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .stock-status.no-stock {
+            color: #d32f2f;
+            background: rgba(211, 47, 47, 0.08);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .stock-status i {
+            font-size: 2rem;
+            color: #e74c3c;
+        }
+        
+        .stock-status.out-of-stock i {
+            animation: flame 0.8s infinite alternate;
+            color: #b71c1c;
+        }
+
+        .stock-status.no-stock i {
+            color: #d32f2f;
+        }
+
+        .stock-desc {
+            display: block;
+            width: 100%;
+            margin-top: 8px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        @keyframes flame {
+            0% {
+                text-shadow: 0 0 10px #ff4757,
+                           0 0 20px #ff4757,
+                           0 0 30px #ff4757;
+                transform: scale(1) rotate(-5deg);
+            }
+            100% {
+                text-shadow: 0 0 20px #ff4757,
+                           0 0 30px #ff4757,
+                           0 0 40px #ff6b6b;
+                transform: scale(1.1) rotate(5deg);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 71, 87, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+            }
+        }
+        
+        .wishlist-item-date {
+            color: #999;
+            font-size: 0.8rem;
+        }
+        
+        .wishlist-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+        
+        .btn-remove-wishlist, .btn-add-to-cart {
+            flex: 1;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+        }
+        
+        .btn-remove-wishlist {
+            background: linear-gradient(45deg, #e74c3c, #ff4b4b);
+            color: white;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.18);
+        }
+        
+        .btn-remove-wishlist:hover {
+            background: linear-gradient(45deg, #c0392b, #ff6b6b);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(231, 76, 60, 0.25);
+        }
+        
+        .btn-add-to-cart {
+            background: linear-gradient(45deg, #e74c3c, #ff7675);
+            color: white;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.18);
+        }
+        
+        .btn-add-to-cart:hover {
+            background: linear-gradient(45deg, #c0392b, #ff6b6b);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(231, 76, 60, 0.25);
+        }
+        
+        .btn-add-to-cart i, .btn-remove-wishlist i {
+            font-size: 1.1rem;
+        }
+        
+        .empty-wishlist {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: rgba(231, 76, 60, 0.05);
+        }
+        
+        .empty-wishlist i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #e74c3c, #ff7675);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .empty-wishlist h3 {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .empty-wishlist p {
+            color: #999;
+            margin-bottom: 30px;
+        }
+        
+        .wishlist-actions-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .wishlist-count {
+            font-size: 1.1rem;
+            color: #666;
+        }
+        
+        .btn-clear-all {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-clear-all:hover {
+            background-color: #c0392b;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        @media (max-width: 768px) {
+            .wishlist-item {
+                padding: 15px;
+            }
+            
+            .wishlist-item-image {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .wishlist-item-info h4 {
+                font-size: 1.1rem;
+            }
+            
+            .wishlist-actions {
+                flex-direction: column;
+            }
+            
+            .wishlist-actions-top {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+
+        /* Loading styles */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .loading-spinner {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .loading-spinner i {
+            color: #7fad39;
+            font-size: 24px;
+        }
+        /* Đổi màu nút Danh mục sản phẩm sang đỏ */
+        .vertical-menu .block-title, .vertical-menu .menu-title, .vertical-menu .menu-icon {
+            background: #e74c3c !important;
+            color: #fff !important;
+            border-radius: 10px 10px 0 0;
+        }
+        .vertical-menu .block-title .angle i {
+            color: #fff !important;
+        }
+        /* Đổi màu border cho đồng bộ */
+        .vertical-menu, .vertical-menu .block-title {
+            border-color: #e74c3c !important;
+        }
+    </style>
+</head>
+
+<body class="biolife-body"><div id="biolife-clone-wrap" class="biolife-clone-wrap"><div class="biolife-panels-actions-wrap" data-root_title="Main Panel"><span class="biolife-current-panel-title">Main Panel</span><a class="biolife-close-btn biolife-close-panels" href="http://localhost:8080/DuAnMyPham/wishlist#" data-object="open-mobile-menu">×</a></div><div class="biolife-panels"><div id="biolife-main-panel" class="biolife-panel biolife-main-panel"><ul class="depth-01">
+                            <li class="menu-item clone-menu-item"><a href="http://localhost:8080/DuAnMyPham/home">Home</a></li>
+                            <li class="menu-item menu-item-has-children has-megamenu clone-menu-item"><a class="biolife-next-panel" href="http://localhost:8080/DuAnMyPham/wishlist#biolife-panel-10" data-target="#biolife-panel-10"></a><a class="biolife-next-panel" href="http://localhost:8080/DuAnMyPham/wishlist#biolife-panel-0" data-target="#biolife-panel-0"></a>
+                                <a href="http://localhost:8080/DuAnMyPham/about-shop.jsp" class="menu-name" data-title="Shop">About Shop</a>
+                            </li>
+                            
+                           <li class="menu-item menu-item-has-children has-child clone-menu-item"><a class="biolife-next-panel" href="http://localhost:8080/DuAnMyPham/wishlist#biolife-panel-11" data-target="#biolife-panel-11"></a><a class="biolife-next-panel" href="http://localhost:8080/DuAnMyPham/wishlist#biolife-panel-5" data-target="#biolife-panel-5"></a>
+    <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="menu-name" data-title="Product">Product</a>
+    
+</li>
+
+
+                            
+                            <li class="menu-item clone-menu-item"><a href="http://localhost:8080/DuAnMyPham/contact_us.jsp">Contact</a></li>
+                        
+                                
+                                    
+                                
+                                    
+                                        <li class="menu-item menu-item-has-children has-megamenu clone-menu-item"><a class="biolife-next-panel" href="http://localhost:8080/DuAnMyPham/wishlist#biolife-panel-12" data-target="#biolife-panel-12"></a>
+                                            <a href="http://localhost:8080/DuAnMyPham/category?categoryId=2" class="menu-name">Chăm sóc da</a>
+                                            
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                            
+                                                
+                                            
+                                        </li>
+                                    
+                                
+                                    
+                                        <li class="menu-item menu-item-has-children has-megamenu clone-menu-item"><a class="biolife-next-panel" href="http://localhost:8080/DuAnMyPham/wishlist#biolife-panel-13" data-target="#biolife-panel-13"></a>
+                                            <a href="http://localhost:8080/DuAnMyPham/category?categoryId=3" class="menu-name">Chăm sóc tóc</a>
+                                            
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                            
+                                                
+                                            
+                                        </li>
+                                    
+                                
+                                    
+                                        <li class="menu-item menu-item-has-children has-megamenu clone-menu-item"><a class="biolife-next-panel" href="http://localhost:8080/DuAnMyPham/wishlist#biolife-panel-14" data-target="#biolife-panel-14"></a>
+                                            <a href="http://localhost:8080/DuAnMyPham/category?categoryId=4" class="menu-name">Chăm sóc cơ thể</a>
+                                            
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                            
+                                                
+                                            
+                                        </li>
+                                    
+                                
+                                    
+                                        <li class="menu-item menu-item-has-children has-megamenu clone-menu-item"><a class="biolife-next-panel" href="http://localhost:8080/DuAnMyPham/wishlist#biolife-panel-15" data-target="#biolife-panel-15"></a>
+                                            <a href="http://localhost:8080/DuAnMyPham/category?categoryId=5" class="menu-name">Nước hoa</a>
+                                            
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                            
+                                                
+                                            
+                                        </li>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </ul></div><div id="biolife-panel-0" class="biolife-panel biolife-sub-panel biolife-hidden"></div><div id="biolife-panel-1" class="biolife-panel biolife-sub-panel biolife-hidden"><ul class="sub-menu">
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=6">
+                                            Sữa rửa mặt
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=7">
+                                            Kem dưỡng
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=8">
+                                            Mặt nạ
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=9">
+                                            Tẩy trang
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=10">
+                                            Kem chống nắng
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                        </ul></div><div id="biolife-panel-2" class="biolife-panel biolife-sub-panel biolife-hidden"><ul class="sub-menu">
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=11">
+                                            Dầu gội
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=12">
+                                            Dầu xả
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=13">
+                                            Dưỡng tóc
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                        </ul></div><div id="biolife-panel-3" class="biolife-panel biolife-sub-panel biolife-hidden"><ul class="sub-menu">
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=14">
+                                            Sữa tắm
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=15">
+                                            Kem dưỡng thể
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=16">
+                                            Kem chống nắng body
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                        </ul></div><div id="biolife-panel-4" class="biolife-panel biolife-sub-panel biolife-hidden"><ul class="sub-menu">
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=17">
+                                            Nước hoa nữ
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=18">
+                                            Nước hoa nam
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item clone-menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=19">
+                                            Nước hoa unisex
+                                        </a>
+                                    </li>
+                                
+                            
+                        </ul></div><div id="biolife-panel-5" class="biolife-panel biolife-sub-panel biolife-hidden"><ul class="sub-menu">
+        <!-- Mục "Tất cả sản phẩm" -->
+        <li class="menu-item clone-menu-item">
+            <a href="http://localhost:8080/DuAnMyPham/all-products">Tất cả sản phẩm</a>
+        </li>
+        <!-- Lặp các danh mục cấp 1 (parentCategoryId = 1) -->
+        
+            
+        
+            
+                <li class="menu-item menu-item-has-children has-child menu-item-has-children has-child menu-item-has-children has-child menu-item-has-children has-child menu-item-has-children has-child clone-menu-item"><a class="biolife-next-panel" href="http://localhost:8080/DuAnMyPham/wishlist#biolife-panel-1" data-target="#biolife-panel-1"></a>
+                    <a href="http://localhost:8080/DuAnMyPham/category?categoryId=2">
+                        Chăm sóc da
+                    </a>
+                    <!-- Dropdown cấp 2 (nếu có) -->
+                    
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    
+                        
+                    
+                </li>
+            
+        
+            
+                <li class="menu-item menu-item-has-children has-child menu-item-has-children has-child menu-item-has-children has-child clone-menu-item"><a class="biolife-next-panel" href="http://localhost:8080/DuAnMyPham/wishlist#biolife-panel-2" data-target="#biolife-panel-2"></a>
+                    <a href="http://localhost:8080/DuAnMyPham/category?categoryId=3">
+                        Chăm sóc tóc
+                    </a>
+                    <!-- Dropdown cấp 2 (nếu có) -->
+                    
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    
+                        
+                    
+                </li>
+            
+        
+            
+                <li class="menu-item menu-item-has-children has-child menu-item-has-children has-child menu-item-has-children has-child clone-menu-item"><a class="biolife-next-panel" href="http://localhost:8080/DuAnMyPham/wishlist#biolife-panel-3" data-target="#biolife-panel-3"></a>
+                    <a href="http://localhost:8080/DuAnMyPham/category?categoryId=4">
+                        Chăm sóc cơ thể
+                    </a>
+                    <!-- Dropdown cấp 2 (nếu có) -->
+                    
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    
+                        
+                    
+                </li>
+            
+        
+            
+                <li class="menu-item menu-item-has-children has-child menu-item-has-children has-child menu-item-has-children has-child clone-menu-item"><a class="biolife-next-panel" href="http://localhost:8080/DuAnMyPham/wishlist#biolife-panel-4" data-target="#biolife-panel-4"></a>
+                    <a href="http://localhost:8080/DuAnMyPham/category?categoryId=5">
+                        Nước hoa
+                    </a>
+                    <!-- Dropdown cấp 2 (nếu có) -->
+                    
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                    
+                        
+                    
+                </li>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </ul></div><div id="biolife-panel-6" class="biolife-panel biolife-sub-panel biolife-hidden"></div><div id="biolife-panel-7" class="biolife-panel biolife-sub-panel biolife-hidden"></div><div id="biolife-panel-8" class="biolife-panel biolife-sub-panel biolife-hidden"></div><div id="biolife-panel-9" class="biolife-panel biolife-sub-panel biolife-hidden"></div><div id="biolife-panel-10" class="biolife-panel biolife-sub-panel biolife-hidden"></div><div id="biolife-panel-11" class="biolife-panel biolife-sub-panel biolife-hidden"></div><div id="biolife-panel-12" class="biolife-panel biolife-sub-panel biolife-hidden"><div class="wrap-megamenu lg-width-900 md-width-640">
+                                                    <div class="mega-content">
+                                                        <div class="row">
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                <div class="wrap-custom-menu vertical-menu">
+                                                                    <h4 class="menu-title">Chăm sóc da</h4>
+                                                                    <ul class="menu">
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=6">Sữa rửa mặt</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=7">Kem dưỡng</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=8">Mặt nạ</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=9">Tẩy trang</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=10">Kem chống nắng</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div></div><div id="biolife-panel-13" class="biolife-panel biolife-sub-panel biolife-hidden"><div class="wrap-megamenu lg-width-900 md-width-640">
+                                                    <div class="mega-content">
+                                                        <div class="row">
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                <div class="wrap-custom-menu vertical-menu">
+                                                                    <h4 class="menu-title">Chăm sóc tóc</h4>
+                                                                    <ul class="menu">
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=11">Dầu gội</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=12">Dầu xả</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=13">Dưỡng tóc</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div></div><div id="biolife-panel-14" class="biolife-panel biolife-sub-panel biolife-hidden"><div class="wrap-megamenu lg-width-900 md-width-640">
+                                                    <div class="mega-content">
+                                                        <div class="row">
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                <div class="wrap-custom-menu vertical-menu">
+                                                                    <h4 class="menu-title">Chăm sóc cơ thể</h4>
+                                                                    <ul class="menu">
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=14">Sữa tắm</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=15">Kem dưỡng thể</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=16">Kem chống nắng body</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div></div><div id="biolife-panel-15" class="biolife-panel biolife-sub-panel biolife-hidden"><div class="wrap-megamenu lg-width-900 md-width-640">
+                                                    <div class="mega-content">
+                                                        <div class="row">
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                <div class="wrap-custom-menu vertical-menu">
+                                                                    <h4 class="menu-title">Nước hoa</h4>
+                                                                    <ul class="menu">
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=17">Nước hoa nữ</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=18">Nước hoa nam</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=19">Nước hoa unisex</a></li>
+                                                                            
+                                                                        
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div></div></div></div>
+    <!-- HEADER -->
+    
+
+
+
+
+
+<style>
+    .horizontal-menu {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    background: #ea3a11;
+    min-width: 0;
+    box-sizing: border-box;
+}
+.horizontal-menu li {
+    padding: 0 10px;
+    min-width: 0;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.header-marquee {
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: center;
+    font-weight: 500;
+    color: #fff;
+    padding: 0 8px;
+    white-space: nowrap;
+    overflow: visible; /* Sửa lại để không bị cắt */
+    text-overflow: unset; /* Không hiện ... */
+}
+
+
+</style>
+<header id="header" class="header-area style-01 layout-04">
+    <div class="header-top bg-main hidden-xs">
+        <div class="container">
+            <div class="top-bar left">
+               <ul class="horizontal-menu">
+    <li><a href="mailto:Organic@company.com"><i class="fa fa-envelope"></i> GroupVIII@gmail.com</a></li>
+    <li><a href="tel:+84796570060"><i class="fa fa-phone"></i> (+84) 079 657 0060</a></li>
+    
+    <li>
+        <a href="https://www.facebook.com/ngoc.son.76917" target="_blank">
+            <i class="fa fa-facebook"></i>
+        </a>
+        <a href="https://chat.zalo.me/" target="_blank">
+            <i class="fa fa-comment"></i>
+        </a>
+        <a href="https://www.instagram.com/sonnnw_8?igsh=MXVzaXAzYTQ1NDN1OA%3D%3D&amp;utm_source=qr" target="_blank">
+            <i class="fa fa-instagram"></i>
+        </a>
+    </li>
+    
+    <li class="header-marquee">🎉 Ưu đãi: FREESHIP99 | 10.000+ khách hàng tin dùng!</li>
+    
+</ul>
+
+
+
+            </div>
+            <div class="top-bar right">                <ul class="horizontal-menu">
+                    
+                                                    <li class="horz-menu-item user-info dropdown-account">                                <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="user-greeting dropdown-toggle" style="color: #fff; margin-right: 10px; font-weight: 500; text-decoration: none;">
+                                    <!-- DEBUG: Avatar value = /avatars/customer1.jpg -->
+                                    <!-- Display user avatar or default icon -->
+                                    
+                                        
+                                            
+                                                
+                                                
+                                                    <!-- Local avatar file -->
+                                                    <img src="./Danh sách yêu thích - Cosmetics Shop_files/customer1.jpg" alt="Avatar" style="width: 24px; height: 24px; border-radius: 50%; margin-right: 5px; vertical-align: middle;" onerror="console.log(&#39;Avatar load error:&#39;, this.src);">
+                                                
+                                            
+                                        
+                                        
+                                    
+                                    Xin Chào, <strong>
+                                        
+                                            
+                                                Nguyễn Thị Lan
+                                            
+                                            
+                                        
+                                    </strong>!
+                                    <i class="fa fa-chevron-down" aria-hidden="true" style="margin-left: 5px; font-size: 12px;"></i>
+                                </a><ul class="dropdown-menu account-menu">
+                                    <li><a href="http://localhost:8080/DuAnMyPham/dashboard"><i class="fa fa-dashboard"></i>Dashboard</a></li>
+                                    <li><a href="http://localhost:8080/DuAnMyPham/profile"><i class="fa fa-user"></i>Thông tin cá nhân</a></li>
+                                    <li><a href="http://localhost:8080/DuAnMyPham/profile?action=edit"><i class="fa fa-edit"></i>Chỉnh sửa thông tin</a></li>
+                                    <li><a href="http://localhost:8080/DuAnMyPham/profile?action=change-password"><i class="fa fa-key"></i>Đổi mật khẩu</a></li>
+                                    <li><a href="http://localhost:8080/DuAnMyPham/wishlist"><i class="fa fa-heart"></i>Danh sách yêu thích</a></li>
+                                        
+                                    <li class="divider"></li>
+                                    <li><a href="http://localhost:8080/DuAnMyPham/logout"><i class="fa fa-sign-out"></i>Đăng Xuất</a></li>
+                                </ul>
+                            </li>
+                        
+                        
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="header-middle biolife-sticky-object">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-2 col-md-6 col-xs-6">
+                    <a href="http://localhost:8080/DuAnMyPham/home" class="biolife-logo">
+                        <img src="./Danh sách yêu thích - Cosmetics Shop_files/organic-3.png" alt="biolife logo" width="215" height="80">
+                    </a>
+                </div>
+                <div class="col-lg-6 col-md-7 hidden-sm hidden-xs">
+                    <div class="primary-menu">
+                        <ul class="menu biolife-menu clone-main-menu clone-primary-menu" id="primary-menu" data-menuname="main menu">
+                            <li class="menu-item"><a href="http://localhost:8080/DuAnMyPham/home">Home</a></li>
+                            <li class="menu-item menu-item-has-children has-megamenu">
+                                <a href="http://localhost:8080/DuAnMyPham/about-shop.jsp" class="menu-name" data-title="Shop">About Shop</a>
+                            </li>
+                            
+                           <li class="menu-item menu-item-has-children has-child">
+    <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="menu-name" data-title="Product">Product</a>
+    <ul class="sub-menu">
+        <!-- Mục "Tất cả sản phẩm" -->
+        <li class="menu-item">
+            <a href="http://localhost:8080/DuAnMyPham/all-products">Tất cả sản phẩm</a>
+        </li>
+        <!-- Lặp các danh mục cấp 1 (parentCategoryId = 1) -->
+        
+            
+        
+            
+                <li class="menu-item
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                         menu-item-has-children has-child
+                    
+                         menu-item-has-children has-child
+                    
+                         menu-item-has-children has-child
+                    
+                         menu-item-has-children has-child
+                    
+                         menu-item-has-children has-child
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    ">
+                    <a href="http://localhost:8080/DuAnMyPham/category?categoryId=2">
+                        Chăm sóc da
+                    </a>
+                    <!-- Dropdown cấp 2 (nếu có) -->
+                    
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    
+                        <ul class="sub-menu">
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=6">
+                                            Sữa rửa mặt
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=7">
+                                            Kem dưỡng
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=8">
+                                            Mặt nạ
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=9">
+                                            Tẩy trang
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=10">
+                                            Kem chống nắng
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+                <li class="menu-item
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                         menu-item-has-children has-child
+                    
+                         menu-item-has-children has-child
+                    
+                         menu-item-has-children has-child
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    ">
+                    <a href="http://localhost:8080/DuAnMyPham/category?categoryId=3">
+                        Chăm sóc tóc
+                    </a>
+                    <!-- Dropdown cấp 2 (nếu có) -->
+                    
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    
+                        <ul class="sub-menu">
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=11">
+                                            Dầu gội
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=12">
+                                            Dầu xả
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=13">
+                                            Dưỡng tóc
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+                <li class="menu-item
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                         menu-item-has-children has-child
+                    
+                         menu-item-has-children has-child
+                    
+                         menu-item-has-children has-child
+                    
+                        
+                    
+                        
+                    
+                        
+                    ">
+                    <a href="http://localhost:8080/DuAnMyPham/category?categoryId=4">
+                        Chăm sóc cơ thể
+                    </a>
+                    <!-- Dropdown cấp 2 (nếu có) -->
+                    
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    
+                        <ul class="sub-menu">
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=14">
+                                            Sữa tắm
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=15">
+                                            Kem dưỡng thể
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=16">
+                                            Kem chống nắng body
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+                <li class="menu-item
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                         menu-item-has-children has-child
+                    
+                         menu-item-has-children has-child
+                    
+                         menu-item-has-children has-child
+                    ">
+                    <a href="http://localhost:8080/DuAnMyPham/category?categoryId=5">
+                        Nước hoa
+                    </a>
+                    <!-- Dropdown cấp 2 (nếu có) -->
+                    
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                        
+                            
+                        
+                    
+                    
+                        <ul class="sub-menu">
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=17">
+                                            Nước hoa nữ
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=18">
+                                            Nước hoa nam
+                                        </a>
+                                    </li>
+                                
+                            
+                                
+                                    <li class="menu-item">
+                                        <a href="http://localhost:8080/DuAnMyPham/category?categoryId=19">
+                                            Nước hoa unisex
+                                        </a>
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </ul>
+</li>
+
+
+                            
+                            <li class="menu-item"><a href="http://localhost:8080/DuAnMyPham/contact_us.jsp">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-md-6 col-xs-6">
+                    <div class="biolife-cart-info">
+                                                <div class="wishlist-block hidden-sm hidden-xs">
+                            <a href="http://localhost:8080/DuAnMyPham/wishlist" class="link-to wishlist-link">
+                                <span class="icon-qty-combine">
+                                    <i class="icon-heart-bold biolife-icon"></i>
+                                    <span class="qty wishlist-count-badge" id="wishlist-count-badge" style="display: inline-block;">2</span>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="minicart-block">
+                            <div class="minicart-contain">
+                                <a href="javascript:void(0)" class="link-to">
+                                    <span class="icon-qty-combine">
+                                        <i class="icon-cart-mini biolife-icon"></i>
+                                        <span class="qty">8</span>
+                                    </span>
+                                    <span class="title">My Cart -</span>
+                                    <span class="sub-total">$0.00</span>
+                                </a>
+                                <div class="cart-content">
+                                    <div class="cart-inner">
+                                        <ul class="products" tabindex="1" style="overflow: hidden; outline: none;">
+                                            <li>
+                                                <div class="minicart-item">
+                                                    <div class="thumb">
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#"><img src="./Danh sách yêu thích - Cosmetics Shop_files/pr-01.jpg" width="90" height="90" alt="National Fresh"></a>
+                                                    </div>
+                                                    <div class="left-info">
+                                                        <div class="product-title"><a href="http://localhost:8080/DuAnMyPham/wishlist#" class="product-name">National Fresh Fruit</a></div>
+                                                        <div class="price">
+                                                            <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
+                                                            <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
+                                                        </div>
+                                                        <div class="qty">
+                                                            <label for="cart[id123][qty]">Qty:</label>
+                                                            <input type="number" class="input-qty" name="cart[id123][qty]" id="cart[id123][qty]" value="1" disabled="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="action">
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="remove"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="minicart-item">
+                                                    <div class="thumb">
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#"><img src="./Danh sách yêu thích - Cosmetics Shop_files/pr-02.jpg" width="90" height="90" alt="National Fresh"></a>
+                                                    </div>
+                                                    <div class="left-info">
+                                                        <div class="product-title"><a href="http://localhost:8080/DuAnMyPham/wishlist#" class="product-name">National Fresh Fruit</a></div>
+                                                        <div class="price">
+                                                            <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
+                                                            <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
+                                                        </div>
+                                                        <div class="qty">
+                                                            <label for="cart[id124][qty]">Qty:</label>
+                                                            <input type="number" class="input-qty" name="cart[id124][qty]" id="cart[id124][qty]" value="1" disabled="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="action">
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="remove"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="minicart-item">
+                                                    <div class="thumb">
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#"><img src="./Danh sách yêu thích - Cosmetics Shop_files/pr-03.jpg" width="90" height="90" alt="National Fresh"></a>
+                                                    </div>
+                                                    <div class="left-info">
+                                                        <div class="product-title"><a href="http://localhost:8080/DuAnMyPham/wishlist#" class="product-name">National Fresh Fruit</a></div>
+                                                        <div class="price">
+                                                            <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
+                                                            <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
+                                                        </div>
+                                                        <div class="qty">
+                                                            <label for="cart[id125][qty]">Qty:</label>
+                                                            <input type="number" class="input-qty" name="cart[id125][qty]" id="cart[id125][qty]" value="1" disabled="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="action">
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="remove"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="minicart-item">
+                                                    <div class="thumb">
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#"><img src="./Danh sách yêu thích - Cosmetics Shop_files/pr-04.jpg" width="90" height="90" alt="National Fresh"></a>
+                                                    </div>
+                                                    <div class="left-info">
+                                                        <div class="product-title"><a href="http://localhost:8080/DuAnMyPham/wishlist#" class="product-name">National Fresh Fruit</a></div>
+                                                        <div class="price">
+                                                            <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
+                                                            <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
+                                                        </div>
+                                                        <div class="qty">
+                                                            <label for="cart[id126][qty]">Qty:</label>
+                                                            <input type="number" class="input-qty" name="cart[id126][qty]" id="cart[id126][qty]" value="1" disabled="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="action">
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="remove"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="minicart-item">
+                                                    <div class="thumb">
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#"><img src="./Danh sách yêu thích - Cosmetics Shop_files/pr-05.jpg" width="90" height="90" alt="National Fresh"></a>
+                                                    </div>
+                                                    <div class="left-info">
+                                                        <div class="product-title"><a href="http://localhost:8080/DuAnMyPham/wishlist#" class="product-name">National Fresh Fruit</a></div>
+                                                        <div class="price">
+                                                            <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
+                                                            <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
+                                                        </div>
+                                                        <div class="qty">
+                                                            <label for="cart[id127][qty]">Qty:</label>
+                                                            <input type="number" class="input-qty" name="cart[id127][qty]" id="cart[id127][qty]" value="1" disabled="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="action">
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                        <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="remove"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <p class="btn-control">
+                                            <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="btn view-cart">view cart</a>
+                                            <a href="http://localhost:8080/DuAnMyPham/wishlist#" class="btn">checkout</a>
+                                        </p>
+                                    </div>
+                                <div id="ascrail2000" class="nicescroll-rails nicescroll-rails-vr" style="width: 8px; z-index: 50; cursor: default; position: absolute; top: 28px; left: 352px; height: 370px; display: block; opacity: 0;"><div class="nicescroll-cursors" style="position: relative; top: 0px; float: right; width: 6px; height: 214px; background-color: rgb(66, 66, 66); border: 1px solid rgb(255, 255, 255); background-clip: padding-box; border-radius: 5px;"></div></div><div id="ascrail2000-hr" class="nicescroll-rails nicescroll-rails-hr" style="height: 8px; z-index: 50; top: 390px; left: 20px; position: absolute; cursor: default; display: none; width: 332px; opacity: 0;"><div class="nicescroll-cursors" style="position: absolute; top: 0px; height: 6px; width: 340px; background-color: rgb(66, 66, 66); border: 1px solid rgb(255, 255, 255); background-clip: padding-box; border-radius: 5px; left: 0px;"></div></div></div>
+                            </div>
+                        </div>
+                        <div class="mobile-menu-toggle">
+                            <a class="btn-toggle" data-object="open-mobile-menu" href="javascript:void(0)">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    </div>
+    <div class="header-bottom hidden-sm hidden-xs">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-4">
+                    <div class="vertical-menu vertical-category-block">
+                        <div class="block-title">
+                            <span class="menu-icon">
+                                <span class="line-1"></span>
+                                <span class="line-2"></span>
+                                <span class="line-3"></span>
+                            </span>
+                            <span class="menu-title">Danh mục sản phẩm</span>
+                            <span class="angle" data-tgleclass="fa fa-caret-down"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
+                        </div>
+                        <div class="wrap-menu">
+                            <ul class="menu clone-main-menu">
+                                
+                                    
+                                
+                                    
+                                        <li class="menu-item menu-item-has-children has-megamenu">
+                                            <a href="http://localhost:8080/DuAnMyPham/category?categoryId=2" class="menu-name">Chăm sóc da</a>
+                                            
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                            
+                                                <div class="wrap-megamenu lg-width-900 md-width-640">
+                                                    <div class="mega-content">
+                                                        <div class="row">
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                <div class="wrap-custom-menu vertical-menu">
+                                                                    <h4 class="menu-title">Chăm sóc da</h4>
+                                                                    <ul class="menu">
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=6">Sữa rửa mặt</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=7">Kem dưỡng</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=8">Mặt nạ</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=9">Tẩy trang</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=10">Kem chống nắng</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                        </li>
+                                    
+                                
+                                    
+                                        <li class="menu-item menu-item-has-children has-megamenu">
+                                            <a href="http://localhost:8080/DuAnMyPham/category?categoryId=3" class="menu-name">Chăm sóc tóc</a>
+                                            
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                            
+                                                <div class="wrap-megamenu lg-width-900 md-width-640">
+                                                    <div class="mega-content">
+                                                        <div class="row">
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                <div class="wrap-custom-menu vertical-menu">
+                                                                    <h4 class="menu-title">Chăm sóc tóc</h4>
+                                                                    <ul class="menu">
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=11">Dầu gội</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=12">Dầu xả</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=13">Dưỡng tóc</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                        </li>
+                                    
+                                
+                                    
+                                        <li class="menu-item menu-item-has-children has-megamenu">
+                                            <a href="http://localhost:8080/DuAnMyPham/category?categoryId=4" class="menu-name">Chăm sóc cơ thể</a>
+                                            
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                            
+                                                <div class="wrap-megamenu lg-width-900 md-width-640">
+                                                    <div class="mega-content">
+                                                        <div class="row">
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                <div class="wrap-custom-menu vertical-menu">
+                                                                    <h4 class="menu-title">Chăm sóc cơ thể</h4>
+                                                                    <ul class="menu">
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=14">Sữa tắm</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=15">Kem dưỡng thể</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=16">Kem chống nắng body</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                        </li>
+                                    
+                                
+                                    
+                                        <li class="menu-item menu-item-has-children has-megamenu">
+                                            <a href="http://localhost:8080/DuAnMyPham/category?categoryId=5" class="menu-name">Nước hoa</a>
+                                            
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                                
+                                                    
+                                                
+                                            
+                                            
+                                                <div class="wrap-megamenu lg-width-900 md-width-640">
+                                                    <div class="mega-content">
+                                                        <div class="row">
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                <div class="wrap-custom-menu vertical-menu">
+                                                                    <h4 class="menu-title">Nước hoa</h4>
+                                                                    <ul class="menu">
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=17">Nước hoa nữ</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=18">Nước hoa nam</a></li>
+                                                                            
+                                                                        
+                                                                            
+                                                                                <li><a href="http://localhost:8080/DuAnMyPham/category?categoryId=19">Nước hoa unisex</a></li>
+                                                                            
+                                                                        
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                        </li>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 padding-top-2px">
+                    <div class="header-search-bar layout-01">
+                        <form action="http://localhost:8080/DuAnMyPham/search" class="form-search" name="desktop-search" method="get">
+    <input type="text" name="q" class="input-text" value="" placeholder="Tìm kiếm...">
+    <select name="categoryId" style="display: none;">
+        <option value="-1" selected="">Tất cả danh mục</option>
+        
+            
+        
+            
+                <option value="2">
+                    Chăm sóc da
+                </option>
+            
+        
+            
+                <option value="3">
+                    Chăm sóc tóc
+                </option>
+            
+        
+            
+                <option value="4">
+                    Chăm sóc cơ thể
+                </option>
+            
+        
+            
+                <option value="5">
+                    Nước hoa
+                </option>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </select><div class="nice-select" tabindex="0"><span class="current">Tất cả danh mục</span><ul class="list"><li data-value="-1" class="option selected">Tất cả danh mục</li><li data-value="2" class="option">
+                    Chăm sóc da
+                </li><li data-value="3" class="option">
+                    Chăm sóc tóc
+                </li><li data-value="4" class="option">
+                    Chăm sóc cơ thể
+                </li><li data-value="5" class="option">
+                    Nước hoa
+                </li></ul></div>
+    <button type="submit" class="btn-submit"><i class="biolife-icon icon-search"></i></button>
+</form>
+
+
+                    </div>
+                    <div class="live-info">
+                        <p class="telephone"><i class="fa fa-phone" aria-hidden="true"></i><b class="phone-number">(+84) 079 657 0060</b></p>
+                        <p class="working-time">Mon-Fri: 8:30am-7:30pm; Sat-Sun: 9:30am-4:30pm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Wishlist JavaScript -->
+
+    <script>
+        // Set context path for JavaScript
+        window.contextPath = '/DuAnMyPham';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if jQuery is already loaded
+            if (typeof jQuery === 'undefined') {
+                // Load jQuery dynamically if not available
+                var script = document.createElement('script');
+                script.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+                script.onload = initializeUserFeatures;
+                document.head.appendChild(script);
+            } else {
+                // jQuery already loaded, proceed directly
+                initializeUserFeatures();
+            }
+        });
+        
+        function initializeUserFeatures() {
+            // Load wishlist count
+            loadWishlistCount();
+            
+            // Initialize dropdown functionality with direct DOM handling for better reliability
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            const dropdownAccount = document.querySelector('.dropdown-account');
+            
+            if (dropdownToggle) {
+                // Add direct click listener to the toggle button
+                dropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdownAccount.classList.toggle('open');
+                });
+                
+                // Close dropdown when clicking elsewhere
+                document.addEventListener('click', function(e) {
+                    if (!dropdownAccount.contains(e.target)) {
+                        dropdownAccount.classList.remove('open');
+                    }
+                });
+                
+                // Prevent dropdown from closing when clicking inside menu
+                if (dropdownMenu) {
+                    dropdownMenu.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                }
+                
+                // Log that initialization was successful
+                console.log('Dropdown menu initialized successfully');
+            } else {
+                console.warn('Dropdown toggle element not found');
+            }
+        }
+
+        function loadWishlistCount() {
+            try {
+                $.ajax({
+                    url: '/DuAnMyPham/wishlist?action=count',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        updateWishlistCount(response.count);
+                    },
+                    error: function () {
+                        // Silently fail for wishlist count
+                        console.log('Could not load wishlist count');
+                    }
+                });
+            } catch (e) {
+                console.log('Error in loadWishlistCount:', e);
+            }
+        }
+
+        function updateWishlistCount(count) {
+            try {
+                const badge = $('#wishlist-count-badge');
+                if (badge) {
+                    if (count > 0) {
+                        badge.text(count).show();
+                    } else {
+                        badge.hide();
+                    }
+                }
+            } catch (e) {
+                console.log('Error in updateWishlistCount:', e);
+            }
+        }
+    </script>
+
+    <style>
+        /* Account Dropdown Enhanced Styles */
+        #header {
+            position: relative;
+            z-index: 999;
+        }
+
+        /* Enhanced Account Dropdown */
+        #header .dropdown-account {
+            position: relative;
+            display: inline-block;
+        }
+
+        #header .dropdown-toggle {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0px 10px;
+            margin: 5px 0px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #header .dropdown-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #header .dropdown-toggle img {
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        #header .dropdown-toggle:hover img {
+            transform: scale(1.1);
+        }
+
+        #header .dropdown-toggle strong {
+            position: relative;
+            display: inline-block;
+        }
+
+        #header .dropdown-toggle strong:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+
+        #header .dropdown-toggle:hover strong:after {
+            width: 100%;
+        }
+
+        #header .dropdown-toggle .fa-chevron-down {
+            transition: all 0.3s ease;
+            margin-left: 8px;
+            font-size: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #header .dropdown-account.open .dropdown-toggle .fa-chevron-down {
+            transform: rotate(180deg);
+            background: #fff;
+            color: #73814B;
+        }
+
+        /* Beautifully styled dropdown menu */
+        #header .dropdown-menu {
+            position: absolute !important;
+            top: 130% !important;
+            right: 0 !important;
+            background: #ffffff !important;
+            border-radius: 12px !important;
+            min-width: 250px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(15px) !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+            border: none !important;
+            overflow: hidden !important;
+            z-index: 10000 !important;
+        }
+
+        #header .dropdown-account.open .dropdown-menu {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(10px) !important;
+        }
+
+        /* User info header in dropdown */
+        #header .dropdown-menu:before {
+            content: "";
+            position: absolute;
+            top: -8px;
+            right: 20px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #ffffff;
+        }
+
+        /* Add user header section */
+        #header .dropdown-menu:after {
+            content: "";
+            display: block;
+            height: 5px;
+            width: 100%;
+            background: linear-gradient(to right, #73814B, #89a34f, #73814B);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Menu items styling */
+        #header .dropdown-menu li {
+            list-style: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            position: relative !important;
+        }
+
+        #header .dropdown-menu li:first-child {
+            margin-top: 5px !important;
+        }
+
+        #header .dropdown-menu li a {
+            display: flex !important;
+            align-items: center !important;
+            padding: 12px 20px !important;
+            color: #4a4a4a !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            text-decoration: none !important;
+            transition: all 0.3s ease !important;
+            border-left: 3px solid transparent !important;
+            border-bottom: 1px solid rgba(0,0,0,0.03) !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        #header .dropdown-menu li:last-child a {
+            border-bottom: none !important;
+        }
+
+        #header .dropdown-menu li a:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: rgba(115, 129, 75, 0.08);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        #header .dropdown-menu li a:hover {
+            color: #73814B !important;
+            border-left-color: #73814B !important;
+            padding-left: 24px !important;
+            background: transparent !important;
+            transform: none !important;
+        }
+
+        #header .dropdown-menu li a:hover:before {
+            width: 100%;
+        }
+
+        #header .dropdown-menu li a i {
+            margin-right: 12px !important;
+            font-size: 16px !important;
+            width: 20px !important;
+            text-align: center !important;
+            color: #73814B !important;
+            opacity: 0.75 !important;
+            transition: all 0.3s ease !important;
+        }
+
+        #header .dropdown-menu li a:hover i {
+            opacity: 1 !important;
+            transform: scale(1.15) !important;
+        }
+
+        /* Divider styling */
+        #header .dropdown-menu .divider {
+            height: 1px !important;
+            margin: 6px 0 !important;
+            background: linear-gradient(to right, rgba(0,0,0,0.02), rgba(0,0,0,0.06), rgba(0,0,0,0.02)) !important;
+            border: none !important;
+        }
+
+        /* Logout specific styling */
+        #header .dropdown-menu li:last-child a {
+            color: #e74c3c !important;
+        }
+
+        #header .dropdown-menu li:last-child a i {
+            color: #e74c3c !important;
+        }
+
+        #header .dropdown-menu li:last-child a:hover {
+            background: rgba(231, 76, 60, 0.08) !important;
+            border-left-color: #e74c3c !important;
+        }
+
+        /* Admin item styling */
+        #header .dropdown-menu li a[href*="admin"] {
+            color: #3498db !important;
+        }
+
+        #header .dropdown-menu li a[href*="admin"] i {
+            color: #3498db !important;
+        }
+
+        #header .dropdown-menu li a[href*="admin"]:hover {
+            background: rgba(52, 152, 219, 0.08) !important;
+            border-left-color: #3498db !important;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            #header .dropdown-account {
+                position: static;
+            }
+
+            #header .dropdown-menu {
+                position: fixed !important;
+                top: 60px !important;
+                right: 10px !important;
+                left: 10px !important;
+                min-width: auto !important;
+                max-width: none !important;
+                border-radius: 8px !important;
+                transform: translateY(8px) !important;
+            }
+
+            #header .dropdown-toggle {
+                padding: 4px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #header .dropdown-menu {
+                right: 5px !important;
+                left: 5px !important;
+                border-radius: 8px !important;
+            }
+
+            #header .dropdown-menu li a {
+                padding: 15px 20px !important;
+                font-size: 15px !important;
+            }
+            
+            #header .dropdown-toggle {
+                padding: 3px 8px;
+            }
+            
+            #header .dropdown-toggle img {
+                width: 20px !important;
+                height: 20px !important;
+            }
+        }
+
+        /* Animation for menu items */
+        @keyframes fadeInItem {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #header .dropdown-menu li {
+            opacity: 0;
+            transform: translateY(8px);
+            animation: fadeInItem 0.3s ease forwards;
+        }
+
+        #header .dropdown-menu li:nth-child(1) { animation-delay: 0.05s; }
+        #header .dropdown-menu li:nth-child(2) { animation-delay: 0.1s; }
+        #header .dropdown-menu li:nth-child(3) { animation-delay: 0.15s; }
+        #header .dropdown-menu li:nth-child(4) { animation-delay: 0.2s; }
+        #header .dropdown-menu li:nth-child(5) { animation-delay: 0.25s; }
+        #header .dropdown-menu li:nth-child(6) { animation-delay: 0.3s; }
+        #header .dropdown-menu li:nth-child(7) { animation-delay: 0.35s; }
+        #header .dropdown-menu li:nth-child(8) { animation-delay: 0.4s; }
+        #header .dropdown-menu li:nth-child(9) { animation-delay: 0.45s; }
+
+        /* Wishlist styles in header */
+        .wishlist-link {
+            position: relative;
+            display: inline-block;
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .wishlist-link:hover {
+            transform: scale(1.1);
+        }
+
+        .wishlist-link .icon-qty-combine {
+            position: relative;
+            display: inline-block;
+        }
+
+        .wishlist-link i.fa-heart {
+            font-size: 24px;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .wishlist-link:hover i.fa-heart {
+            color: #73814B;
+        }
+
+        .wishlist-count-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #73814B;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            min-width: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .wishlist-link:hover .wishlist-count-badge {
+            transform: scale(1.1);
+            background-color: #5c6a3d;
+        }
+
+        /* Animation for count update */
+        @keyframes countUpdate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .wishlist-count-badge.updating {
+            animation: countUpdate 0.3s ease-in-out;
+        }
+    </style>
+
+
+<script>
+    // Load wishlist count when page loads
+    document.addEventListener("DOMContentLoaded", function() {
+        var isLoggedIn = 'true' === 'true';
+        if (isLoggedIn) {
+            loadWishlistCount();
+        }
+    });
+    
+    // Function to load wishlist count
+    function loadWishlistCount() {
+        fetch('/DuAnMyPham/wishlist/count', {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            updateWishlistCountBadge(data.count);
+        })
+        .catch(error => {
+            console.error('Error fetching wishlist count:', error);
+        });
+    }
+    
+    // Update wishlist count badge
+    function updateWishlistCountBadge(count) {
+        const badge = document.getElementById('wishlist-count-badge');
+        if (badge) {
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+            
+            // Add animation
+            badge.classList.add('updating');
+            setTimeout(() => {
+                badge.classList.remove('updating');
+            }, 300);
+        }
+    }
+</script>
+
+    <!-- Main Content -->
+    <div class="page-contain wishlist-container">
+        <div class="container">
+            <!-- Alert Container -->
+            <div id="alert-container"></div>
+            
+            <!-- Wishlist Header -->
+            <div class="wishlist-header">
+                <h1><i class="fa fa-heart" style="color: #e74c3c;"></i> Danh sách yêu thích</h1>
+                <p>Những sản phẩm bạn đã lưu để mua sau</p>
+            </div>
+            
+            <!-- Wishlist Content -->
+            
+                
+                    <!-- Wishlist Actions -->
+                    <div class="wishlist-actions-top">
+                        <div class="wishlist-count">
+                            <strong>Bạn có <span id="wishlist-count">2</span> sản phẩm yêu thích</strong>
+                        </div>
+                        
+                            <button type="button" class="btn-clear-all" onclick="clearAllWishlist()">
+                                <i class="fa fa-trash"></i> Xóa tất cả
+                            </button>
+                        
+                    </div>
+                    
+                    <!-- Wishlist Items -->
+                    <div id="wishlist-items">
+                        
+                            <div class="wishlist-item" data-wishlist-id="1" data-product-id="2">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5">
+                                        
+                                            
+                                                <img src="./Danh sách yêu thích - Cosmetics Shop_files/gentle_foam_main.jpg" alt="Sữa rửa mặt Gentle Foam" class="wishlist-item-image">
+                                            
+                                            
+                                        
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="wishlist-item-info">
+                                            <h4>Sữa rửa mặt Gentle Foam</h4>
+                                            <div class="product-info-wrapper">
+                                                <div class="wishlist-item-price">
+                                                    
+                                                        
+                                                            <span class="current-price">
+                                                                150,000đ
+                                                            </span>
+                                                            <span class="original-price">
+                                                                180,000đ
+                                                            </span>
+                                                            <span class="discount-percent">
+                                                                -17%
+                                                            </span>
+                                                        
+                                                        
+                                                    
+                                                </div>
+                                                <div class="product-details">
+                                                    
+                                                        <div class="wishlist-item-volume">
+                                                            <i class="fa fa-flask"></i>
+                                                            <span>Thể tích: 120.00 ml</span>
+                                                        </div>
+                                                    
+                                                    
+                                                        <div class="wishlist-item-category">
+                                                            <i class="fa fa-tag"></i>
+                                                            <span>Sữa rửa mặt</span>
+                                                        </div>
+                                                    
+                                                    
+                                                        <div class="wishlist-item-description">
+                                                            <i class="fa fa-info-circle"></i>
+                                                            <span>Sữa rửa mặt dịu nhẹ cho da nhạy cảm</span>
+                                                        </div>
+                                                    
+                                                    
+                                                    <div class="stock-status in-stock">
+                                                        <i class="fa fa-check-circle"></i>
+                                                        <span>
+                                                            Còn hàng
+                                                        </span>
+                                                        <span class="stock-desc">
+                                                            Sẵn sàng giao hàng
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="wishlist-actions">
+                                            
+                                                <button type="button" class="btn-add-to-cart" onclick="addToCart(&#39;2&#39;)">
+                                                    <i class="fa fa-shopping-cart"></i> Thêm vào giỏ
+                                                </button>
+                                            
+                                            
+                                            <button type="button" class="btn-remove-wishlist" onclick="removeFromWishlist(&#39;1&#39;, &#39;2&#39;)">
+                                                <i class="fa fa-trash"></i> Xóa
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class="wishlist-item" data-wishlist-id="2" data-product-id="3">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5">
+                                        
+                                            
+                                                <img src="./Danh sách yêu thích - Cosmetics Shop_files/salicylic_cleanser_main.jpg" alt="Sữa rửa mặt Salicylic Acid" class="wishlist-item-image">
+                                            
+                                            
+                                        
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="wishlist-item-info">
+                                            <h4>Sữa rửa mặt Salicylic Acid</h4>
+                                            <div class="product-info-wrapper">
+                                                <div class="wishlist-item-price">
+                                                    
+                                                        
+                                                            <span class="current-price">
+                                                                180,000đ
+                                                            </span>
+                                                            <span class="original-price">
+                                                                220,000đ
+                                                            </span>
+                                                            <span class="discount-percent">
+                                                                -18%
+                                                            </span>
+                                                        
+                                                        
+                                                    
+                                                </div>
+                                                <div class="product-details">
+                                                    
+                                                        <div class="wishlist-item-volume">
+                                                            <i class="fa fa-flask"></i>
+                                                            <span>Thể tích: 100.00 ml</span>
+                                                        </div>
+                                                    
+                                                    
+                                                        <div class="wishlist-item-category">
+                                                            <i class="fa fa-tag"></i>
+                                                            <span>Sữa rửa mặt</span>
+                                                        </div>
+                                                    
+                                                    
+                                                        <div class="wishlist-item-description">
+                                                            <i class="fa fa-info-circle"></i>
+                                                            <span>Sữa rửa mặt trị mụn với BHA</span>
+                                                        </div>
+                                                    
+                                                    
+                                                    <div class="stock-status in-stock">
+                                                        <i class="fa fa-check-circle"></i>
+                                                        <span>
+                                                            Còn hàng
+                                                        </span>
+                                                        <span class="stock-desc">
+                                                            Sẵn sàng giao hàng
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="wishlist-actions">
+                                            
+                                                <button type="button" class="btn-add-to-cart" onclick="addToCart(&#39;3&#39;)">
+                                                    <i class="fa fa-shopping-cart"></i> Thêm vào giỏ
+                                                </button>
+                                            
+                                            
+                                            <button type="button" class="btn-remove-wishlist" onclick="removeFromWishlist(&#39;2&#39;, &#39;3&#39;)">
+                                                <i class="fa fa-trash"></i> Xóa
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                    </div>
+                
+                
+            
+
+            <!-- Loading Indicator -->
+            <div class="loading">
+                <div class="loading-spinner">
+                    <i class="fa fa-spinner fa-spin"></i>
+                    <span>Đang xử lý...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    
+<footer id="footer" class="footer layout-03">
+    <div class="footer-content background-footer-03">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-9">
+                    <section class="footer-item">
+                        <a href="http://localhost:8080/DuAnMyPham/home" class="logo footer-logo">
+                            <img src="./Danh sách yêu thích - Cosmetics Shop_files/organic-3.png" alt="biolife logo" width="210" height="80">
+                        </a>
+                        <div class="footer-phone-info">
+                            <i class="biolife-icon icon-head-phone"></i>
+                            <p class="r-info">
+                                <span>Liên hệ với chúng tôi</span>
+                                <span>(+84) 079-657-0060</span>
+                            </p>
+                        </div>
+                    </section>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6 md-margin-top-5px sm-margin-top-50px xs-margin-top-40px">
+                    <section class="footer-item">
+                        <h3 class="section-title">Liên kết hữu ích</h3>
+                        <div class="row">
+                            <div class="col-lg-6 col-sm-6 col-xs-6">
+                                <div class="wrap-custom-menu vertical-menu-2">
+                                    <ul class="menu">
+                                        <li><a href="http://localhost:8080/DuAnMyPham/about">Về chúng tôi</a></li>
+                                        <li><a href="http://localhost:8080/DuAnMyPham/shipping-policy">Chính sách vận chuyển</a></li>
+                                        <li><a href="http://localhost:8080/DuAnMyPham/privacy-policy">Chính sách bảo mật</a></li>
+                                        <li><a href="http://localhost:8080/DuAnMyPham/terms">Điều khoản sử dụng</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-sm-6 col-xs-6">
+                                <div class="wrap-custom-menu vertical-menu-2">
+                                    <ul class="menu">
+                                        <li><a href="http://localhost:8080/DuAnMyPham/contact">Liên hệ</a></li>
+                                        <li><a href="http://localhost:8080/DuAnMyPham/return-policy">Chính sách đổi trả</a></li>
+                                        <li><a href="http://localhost:8080/DuAnMyPham/faq">FAQ</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6 md-margin-top-5px sm-margin-top-50px xs-margin-top-40px">
+                    <section class="footer-item">
+                        <h3 class="section-title">Thông tin liên hệ</h3>
+                        <div class="contact-info-block footer-layout xs-padding-top-10px">
+                            <ul class="contact-lines">
+                                <li>
+                                    <p class="info-item">
+                                        <i class="biolife-icon icon-location"></i>
+                                        <b class="desc">Địa chỉ: 123 Đường Nam Kì Khởi Nghĩa, Phường Ngũ Hành Sơn, TP.Đà Nẵng</b>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p class="info-item">
+                                        <i class="biolife-icon icon-phone"></i>
+                                        <b class="desc">Phone: (+84) 079 657 0060</b>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p class="info-item">
+                                        <i class="biolife-icon icon-letter"></i>
+                                        <b class="desc">Email: sonhuynh.0811@gmail.com</b>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p class="info-item">
+                                        <i class="biolife-icon icon-clock"></i>
+                                        <b class="desc">Giờ làm việc: 8:00 - 22:00 mỗi ngày</b>
+                                    </p>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="biolife-social inline">
+                            <ul class="socials">
+                                <li><a href="http://localhost:8080/DuAnMyPham/wishlist#" title="facebook" class="socail-btn"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                                <li><a href="http://localhost:8080/DuAnMyPham/wishlist#" title="youtube" class="socail-btn"><i class="fa fa-youtube" aria-hidden="true"></i></a></li>
+                                <li><a href="http://localhost:8080/DuAnMyPham/wishlist#" title="instagram" class="socail-btn"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="separator sm-margin-top-70px xs-margin-top-40px"></div>
+                </div>
+                <div class="col-lg-12 col-sm-12 col-xs-12">
+                    <div class="copy-right-text text-center">
+                        <p>© 2025 Bản quyền thuộc về công ty TNHH Mỹ Phẩm GROUP VIII. Đã đăng ký bản quyền.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!--Footer For Mobile-->
+<div class="mobile-footer">
+    <div class="mobile-footer-inner">
+        <div class="mobile-block block-menu-main">
+            <a class="menu-bar menu-toggle btn-toggle" data-object="open-mobile-menu" href="javascript:void(0)">
+                <span class="fa fa-bars"></span>
+                <span class="text">Menu</span>
+            </a>
+        </div>
+        
+        <div class="mobile-block block-minicart">
+            <a class="link-to-cart" href="http://localhost:8080/DuAnMyPham/cart">
+                <span class="fa fa-shopping-bag" aria-hidden="true"></span>
+                <span class="text">Giỏ hàng</span>
+            </a>
+        </div>
+        <div class="mobile-block block-global">
+            <a class="menu-bar myaccount-toggle btn-toggle" data-object="global-panel-opened" href="javascript:void(0)">
+                <span class="fa fa-user"></span>
+                <span class="text">Tài khoản</span>
+            </a>
+        </div>
+    </div>
+</div> 
+
+    <!-- Scripts -->
+    <script src="./Danh sách yêu thích - Cosmetics Shop_files/jquery-3.4.1.min.js"></script>
+    <script src="./Danh sách yêu thích - Cosmetics Shop_files/bootstrap.min.js"></script>
+    <script src="./Danh sách yêu thích - Cosmetics Shop_files/jquery.nice-select.min.js"></script>
+    <script src="./Danh sách yêu thích - Cosmetics Shop_files/jquery.nicescroll.min.js"></script>
+    <script src="./Danh sách yêu thích - Cosmetics Shop_files/slick.min.js"></script>
+    <script src="./Danh sách yêu thích - Cosmetics Shop_files/biolife.framework.js"></script>
+    <script src="./Danh sách yêu thích - Cosmetics Shop_files/functions.js"></script><div id="overlay"></div>
+    <script src="./Danh sách yêu thích - Cosmetics Shop_files/wishlist.js"></script>
+
+
+</body></html>
